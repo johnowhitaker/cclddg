@@ -528,7 +528,7 @@ This block is applied at the lowest resolution of the U-Net.</p>
 * `use_cloob` = True. Set to false if you don't want to use CLOOB conditioning.
 * `n_cloob_channels` - the size of the embedding used for the CLOOB conditioning input.
 * `n_time_channels` - the size of the time embedding. If -1, this is set to n_channels*4
-* `denom_factor` - 100 by default, set to 10,000 if wanting to do more traditional diffusion stuff where n_steps is high.</code></pre>
+* `denom_factor` for the TimeEmbedding. 100 by default, set to 10,000 if wanting to do more traditional diffusion stuff where n_steps is high.</code></pre>
 
 </div>
 
@@ -558,35 +558,23 @@ This block is applied at the lowest resolution of the U-Net.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="DISC" class="doc_header"><code>class</code> <code>DISC</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L478" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>DISC</code>(<strong><code>image_channels</code></strong>:<code>int</code>=<em><code>3</code></em>, <strong><code>n_channels</code></strong>:<code>int</code>=<em><code>64</code></em>, <strong><code>ch_mults</code></strong>:<code>Union</code>[<code>typing.Tuple[int, ...]</code>, <code>typing.List[int]</code>]=<em><code>(1, 2, 2, 4)</code></em>, <strong><code>is_attn</code></strong>:<code>Union</code>[<code>typing.Tuple[bool, ...]</code>, <code>typing.List[int]</code>]=<em><code>(False, False, True, True)</code></em>, <strong><code>n_blocks</code></strong>:<code>int</code>=<em><code>2</code></em>) :: <code>Module</code></p>
+<h2 id="Discriminator" class="doc_header"><code>class</code> <code>Discriminator</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L468" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>Discriminator</code>(<strong><code>image_channels</code></strong>:<code>int</code>=<em><code>3</code></em>, <strong><code>n_channels</code></strong>:<code>int</code>=<em><code>64</code></em>, <strong><code>ch_mults</code></strong>:<code>Union</code>[<code>typing.Tuple[int, ...]</code>, <code>typing.List[int]</code>]=<em><code>(1, 2, 2, 4)</code></em>, <strong><code>is_attn</code></strong>:<code>Union</code>[<code>typing.Tuple[bool, ...]</code>, <code>typing.List[int]</code>]=<em><code>(False, False, True, True)</code></em>, <strong><code>n_blocks</code></strong>:<code>int</code>=<em><code>2</code></em>, <strong><code>use_cloob</code></strong>=<em><code>True</code></em>, <strong><code>n_cloob_channels</code></strong>:<code>int</code>=<em><code>256</code></em>, <strong><code>n_time_channels</code></strong>:<code>int</code>=<em><code>-1</code></em>, <strong><code>denom_factor</code></strong>:<code>int</code>=<em><code>100</code></em>) :: <code>Module</code></p>
 </blockquote>
-<p>Base class for all neural network modules.</p>
-<p>Your models should also subclass this class.</p>
-<p>Modules can also contain other Modules, allowing to nest them in
-a tree structure. You can assign the submodules as regular attributes::</p>
-
-<pre><code>import torch.nn as nn
-import torch.nn.functional as F
-
-class Model(nn.Module):
-    def __init__(self):
-        super().__init__()
-        self.conv1 = nn.Conv2d(1, 20, 5)
-        self.conv2 = nn.Conv2d(20, 20, 5)
-
-    def forward(self, x):
-        x = F.relu(self.conv1(x))
-        return F.relu(self.conv2(x))
-
-</code></pre>
-<p>Submodules assigned in this way will be registered, and will have their
-parameters converted too when you call :meth:<code>to</code>, etc.</p>
-<p>.. note::
-    As per the example above, an <code>__init__()</code> call to the parent class
-    must be made before assignment on the child.</p>
-<p>:ivar training: Boolean represents whether this module is in training or
-                evaluation mode.
-:vartype training: bool</p>
+<p>Discriminator</p>
+<p>Based on the same architecture as the UNet, but without the upwards half of the unet.</p>
+<ul>
+<li><code>image_channels</code> is the number of channels in the image. $3$ for RGB.<ul>
+<li><code>n_channels</code> is number of channels in the initial feature map that we transform the image into</li>
+<li><code>ch_mults</code> is the list of channel numbers at each resolution. The number of channels is <code>ch_mults[i] * n_channels</code></li>
+<li><code>is_attn</code> is a list of booleans that indicate whether to use attention at each resolution</li>
+<li><code>n_blocks</code> is the number of <code>UpDownBlocks</code> at each resolution</li>
+<li><code>use_cloob</code> = True. Set to false if you don't want to use CLOOB conditioning.</li>
+<li><code>n_cloob_channels</code> - the size of the embedding used for the CLOOB conditioning input.</li>
+<li><code>n_time_channels</code> - the size of the time embedding. If -1, this is set to n_channels*4</li>
+<li><code>denom_factor</code> for the TimeEmbedding. 100 by default, set to 10,000 if wanting to do more traditional diffusion stuff where n_steps is high.</li>
+</ul>
+</li>
+</ul>
 
 </div>
 
@@ -635,6 +623,75 @@ parameters converted too when you call :meth:<code>to</code>, etc.</p>
 
 <div class="output_text output_subarea output_execute_result">
 <pre>(torch.Size([1, 4, 16, 16]), torch.Size([1, 4, 16, 16]))</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">disc</span> <span class="o">=</span> <span class="n">Discriminator</span><span class="p">(</span><span class="n">image_channels</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">use_cloob</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">disc</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>torch.Size([1, 1])</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">labels</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
+<span class="n">l</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BCELoss</span><span class="p">()</span>
+<span class="n">l</span><span class="p">(</span><span class="n">disc</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">labels</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>tensor(0.7863, grad_fn=&lt;BinaryCrossEntropyBackward0&gt;)</pre>
 </div>
 
 </div>

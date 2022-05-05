@@ -14,7 +14,7 @@ index = {"Swish": "00_core.ipynb",
          "Upsample": "00_core.ipynb",
          "Downsample": "00_core.ipynb",
          "UNet": "00_core.ipynb",
-         "DISC": "00_core.ipynb"}
+         "Discriminator": "00_core.ipynb"}
 
 modules = ["core.py"]
 
