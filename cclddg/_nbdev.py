@@ -15,10 +15,13 @@ index = {"Swish": "00_core.ipynb",
          "Downsample": "00_core.ipynb",
          "UNet": "00_core.ipynb",
          "Discriminator": "00_core.ipynb",
-         "DDG_Context": "01_DDG_Context.ipynb"}
+         "DDG_Context": "01_DDG_Context.ipynb",
+         "CelebAData": "02_Datasets.ipynb",
+         "CC12M": "02_Datasets.ipynb"}
 
 modules = ["core.py",
-           "ddg_context.py"]
+           "ddg_context.py",
+           "data.py"]
 
 doc_url = "https://johnowhitaker.github.io/cclddg/"
 

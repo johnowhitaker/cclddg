@@ -15,6 +15,9 @@ entries:
     - output: web,pdf
       title: Denoising Diffusion GAN Context
       url: DDG_Context.html
+    - output: web,pdf
+      title: Dataset Management
+      url: Datasets.html
     output: web
     title: cclddg
   output: web
