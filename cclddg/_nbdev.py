@@ -3,9 +3,9 @@
 __all__ = ["index", "modules", "custom_doc_links", "git_url"]
 
 index = {"Swish": "00_core.ipynb",
+         "TimeEmbedding": "00_core.ipynb",
          "CLOOBEmbedding": "00_core.ipynb",
          "ZEmbedding": "00_core.ipynb",
-         "TimeEmbedding": "00_core.ipynb",
          "ResidualBlock": "00_core.ipynb",
          "AttentionBlock": "00_core.ipynb",
          "DownBlock": "00_core.ipynb",
