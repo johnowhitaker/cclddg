@@ -33,6 +33,20 @@ nb_path: "00_core.ipynb"
     
 <div class="cell border-box-sizing code_cell rendered">
 
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>By default this all uses the <a href="/cclddg/core.html#Swish"><code>Swish</code></a> activation function: $x \cdot \sigma(x)$</p>
+
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
 <div class="output_wrapper">
 <div class="output">
 
@@ -40,15 +54,49 @@ nb_path: "00_core.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="Swish" class="doc_header"><code>class</code> <code>Swish</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L15" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>Swish</code>() :: <code>Module</code></p>
+<h2 id="Swish" class="doc_header"><code>class</code> <code>Swish</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L13" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>Swish</code>() :: <code>Module</code></p>
 </blockquote>
-<h3 id="Swish-actiavation-function">Swish actiavation function<a class="anchor-link" href="#Swish-actiavation-function"> </a></h3>$$x \cdot \sigma(x)$$
-</div>
+<p>Base class for all neural network modules.</p>
+<p>Your models should also subclass this class.</p>
+<p>Modules can also contain other Modules, allowing to nest them in
+a tree structure. You can assign the submodules as regular attributes::</p>
+
+<pre><code>import torch.nn as nn
+import torch.nn.functional as F
+
+class Model(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.conv1 = nn.Conv2d(1, 20, 5)
+        self.conv2 = nn.Conv2d(20, 20, 5)
+
+    def forward(self, x):
+        x = F.relu(self.conv1(x))
+        return F.relu(self.conv2(x))
+
+</code></pre>
+<p>Submodules assigned in this way will be registered, and will have their
+parameters converted too when you call :meth:<code>to</code>, etc.</p>
+<p>.. note::
+    As per the example above, an <code>__init__()</code> call to the parent class
+    must be made before assignment on the child.</p>
+<p>:ivar training: Boolean represents whether this module is in training or
+                evaluation mode.
+:vartype training: bool</p>
 
 </div>
 
 </div>
+
 </div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
 
 </div>
     {% endraw %}
@@ -64,7 +112,7 @@ nb_path: "00_core.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="CLOOBEmbedding" class="doc_header"><code>class</code> <code>CLOOBEmbedding</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L25" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>CLOOBEmbedding</code>(<strong><code>n_channels</code></strong>:<code>int</code>) :: <code>Module</code></p>
+<h2 id="CLOOBEmbedding" class="doc_header"><code>class</code> <code>CLOOBEmbedding</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L20" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>CLOOBEmbedding</code>(<strong><code>n_channels</code></strong>:<code>int</code>) :: <code>Module</code></p>
 </blockquote>
 <p>Base class for all neural network modules.</p>
 <p>Your models should also subclass this class.</p>
@@ -115,7 +163,7 @@ parameters converted too when you call :meth:<code>to</code>, etc.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="ZEmbedding" class="doc_header"><code>class</code> <code>ZEmbedding</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L40" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>ZEmbedding</code>(<strong><code>z_dim</code></strong>:<code>int</code>, <strong><code>n_channels</code></strong>:<code>int</code>) :: <code>Module</code></p>
+<h2 id="ZEmbedding" class="doc_header"><code>class</code> <code>ZEmbedding</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L35" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>ZEmbedding</code>(<strong><code>z_dim</code></strong>:<code>int</code>, <strong><code>n_channels</code></strong>:<code>int</code>) :: <code>Module</code></p>
 </blockquote>
 <p>Base class for all neural network modules.</p>
 <p>Your models should also subclass this class.</p>
@@ -166,7 +214,7 @@ parameters converted too when you call :meth:<code>to</code>, etc.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="TimeEmbedding" class="doc_header"><code>class</code> <code>TimeEmbedding</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L55" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>TimeEmbedding</code>(<strong><code>n_channels</code></strong>:<code>int</code>) :: <code>Module</code></p>
+<h2 id="TimeEmbedding" class="doc_header"><code>class</code> <code>TimeEmbedding</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L50" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>TimeEmbedding</code>(<strong><code>n_channels</code></strong>:<code>int</code>) :: <code>Module</code></p>
 </blockquote>
 <h3 id="Embeddings-for-$t$">Embeddings for $t$<a class="anchor-link" href="#Embeddings-for-$t$"> </a></h3>
 </div>
@@ -190,7 +238,7 @@ parameters converted too when you call :meth:<code>to</code>, etc.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="ResidualBlock" class="doc_header"><code>class</code> <code>ResidualBlock</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L97" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>ResidualBlock</code>(<strong><code>in_channels</code></strong>:<code>int</code>, <strong><code>out_channels</code></strong>:<code>int</code>, <strong><code>time_channels</code></strong>:<code>int</code>, <strong><code>n_groups</code></strong>:<code>int</code>=<em><code>32</code></em>) :: <code>Module</code></p>
+<h2 id="ResidualBlock" class="doc_header"><code>class</code> <code>ResidualBlock</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L92" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>ResidualBlock</code>(<strong><code>in_channels</code></strong>:<code>int</code>, <strong><code>out_channels</code></strong>:<code>int</code>, <strong><code>time_channels</code></strong>:<code>int</code>, <strong><code>n_groups</code></strong>:<code>int</code>=<em><code>32</code></em>) :: <code>Module</code></p>
 </blockquote>
 <h3 id="Residual-block">Residual block<a class="anchor-link" href="#Residual-block"> </a></h3><p>A residual block has two convolution layers with group normalization.
 Each resolution is processed with two residual blocks.</p>
@@ -216,7 +264,7 @@ Each resolution is processed with two residual blocks.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="AttentionBlock" class="doc_header"><code>class</code> <code>AttentionBlock</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L148" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>AttentionBlock</code>(<strong><code>n_channels</code></strong>:<code>int</code>, <strong><code>n_heads</code></strong>:<code>int</code>=<em><code>1</code></em>, <strong><code>d_k</code></strong>:<code>int</code>=<em><code>None</code></em>, <strong><code>n_groups</code></strong>:<code>int</code>=<em><code>32</code></em>) :: <code>Module</code></p>
+<h2 id="AttentionBlock" class="doc_header"><code>class</code> <code>AttentionBlock</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L143" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>AttentionBlock</code>(<strong><code>n_channels</code></strong>:<code>int</code>, <strong><code>n_heads</code></strong>:<code>int</code>=<em><code>1</code></em>, <strong><code>d_k</code></strong>:<code>int</code>=<em><code>None</code></em>, <strong><code>n_groups</code></strong>:<code>int</code>=<em><code>32</code></em>) :: <code>Module</code></p>
 </blockquote>
 <h3 id="Attention-block">Attention block<a class="anchor-link" href="#Attention-block"> </a></h3><p>This is similar to <a href="../../transformers/mha.html">transformer multi-head attention</a>.</p>
 
@@ -241,7 +289,7 @@ Each resolution is processed with two residual blocks.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="DownBlock" class="doc_header"><code>class</code> <code>DownBlock</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L215" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>DownBlock</code>(<strong><code>in_channels</code></strong>:<code>int</code>, <strong><code>out_channels</code></strong>:<code>int</code>, <strong><code>time_channels</code></strong>:<code>int</code>, <strong><code>has_attn</code></strong>:<code>bool</code>) :: <code>Module</code></p>
+<h2 id="DownBlock" class="doc_header"><code>class</code> <code>DownBlock</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L210" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>DownBlock</code>(<strong><code>in_channels</code></strong>:<code>int</code>, <strong><code>out_channels</code></strong>:<code>int</code>, <strong><code>time_channels</code></strong>:<code>int</code>, <strong><code>has_attn</code></strong>:<code>bool</code>) :: <code>Module</code></p>
 </blockquote>
 <h3 id="Down-block">Down block<a class="anchor-link" href="#Down-block"> </a></h3><p>This combines <a href="/cclddg/core.html#ResidualBlock"><code>ResidualBlock</code></a> and <a href="/cclddg/core.html#AttentionBlock"><code>AttentionBlock</code></a>. These are used in the first half of U-Net at each resolution.</p>
 
@@ -266,7 +314,7 @@ Each resolution is processed with two residual blocks.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="UpBlock" class="doc_header"><code>class</code> <code>UpBlock</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L235" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>UpBlock</code>(<strong><code>in_channels</code></strong>:<code>int</code>, <strong><code>out_channels</code></strong>:<code>int</code>, <strong><code>time_channels</code></strong>:<code>int</code>, <strong><code>has_attn</code></strong>:<code>bool</code>) :: <code>Module</code></p>
+<h2 id="UpBlock" class="doc_header"><code>class</code> <code>UpBlock</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L230" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>UpBlock</code>(<strong><code>in_channels</code></strong>:<code>int</code>, <strong><code>out_channels</code></strong>:<code>int</code>, <strong><code>time_channels</code></strong>:<code>int</code>, <strong><code>has_attn</code></strong>:<code>bool</code>) :: <code>Module</code></p>
 </blockquote>
 <h3 id="Up-block">Up block<a class="anchor-link" href="#Up-block"> </a></h3><p>This combines <a href="/cclddg/core.html#ResidualBlock"><code>ResidualBlock</code></a> and <a href="/cclddg/core.html#AttentionBlock"><code>AttentionBlock</code></a>. These are used in the second half of U-Net at each resolution.</p>
 
@@ -291,7 +339,7 @@ Each resolution is processed with two residual blocks.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="MiddleBlock" class="doc_header"><code>class</code> <code>MiddleBlock</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L257" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>MiddleBlock</code>(<strong><code>n_channels</code></strong>:<code>int</code>, <strong><code>time_channels</code></strong>:<code>int</code>) :: <code>Module</code></p>
+<h2 id="MiddleBlock" class="doc_header"><code>class</code> <code>MiddleBlock</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L252" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>MiddleBlock</code>(<strong><code>n_channels</code></strong>:<code>int</code>, <strong><code>time_channels</code></strong>:<code>int</code>) :: <code>Module</code></p>
 </blockquote>
 <h3 id="Middle-block">Middle block<a class="anchor-link" href="#Middle-block"> </a></h3><p>It combines a <a href="/cclddg/core.html#ResidualBlock"><code>ResidualBlock</code></a>, <a href="/cclddg/core.html#AttentionBlock"><code>AttentionBlock</code></a>, followed by another <a href="/cclddg/core.html#ResidualBlock"><code>ResidualBlock</code></a>.
 This block is applied at the lowest resolution of the U-Net.</p>
@@ -317,7 +365,7 @@ This block is applied at the lowest resolution of the U-Net.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="Upsample" class="doc_header"><code>class</code> <code>Upsample</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L277" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>Upsample</code>(<strong><code>n_channels</code></strong>) :: <code>Module</code></p>
+<h2 id="Upsample" class="doc_header"><code>class</code> <code>Upsample</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L272" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>Upsample</code>(<strong><code>n_channels</code></strong>) :: <code>Module</code></p>
 </blockquote>
 <h3 id="Scale-up-the-feature-map-by-$2--imes$">Scale up the feature map by $2  imes$<a class="anchor-link" href="#Scale-up-the-feature-map-by-$2--imes$"> </a></h3>
 </div>
@@ -341,7 +389,7 @@ This block is applied at the lowest resolution of the U-Net.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="Downsample" class="doc_header"><code>class</code> <code>Downsample</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L293" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>Downsample</code>(<strong><code>n_channels</code></strong>) :: <code>Module</code></p>
+<h2 id="Downsample" class="doc_header"><code>class</code> <code>Downsample</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L288" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>Downsample</code>(<strong><code>n_channels</code></strong>) :: <code>Module</code></p>
 </blockquote>
 <h3>Scale down the feature map by $rac{1}{2}       imes$</h3>
 
@@ -366,7 +414,7 @@ This block is applied at the lowest resolution of the U-Net.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="UNet" class="doc_header"><code>class</code> <code>UNet</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L309" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>UNet</code>(<strong><code>image_channels</code></strong>:<code>int</code>=<em><code>3</code></em>, <strong><code>n_channels</code></strong>:<code>int</code>=<em><code>64</code></em>, <strong><code>ch_mults</code></strong>:<code>Union</code>[<code>typing.Tuple[int, ...]</code>, <code>typing.List[int]</code>]=<em><code>(1, 2, 2, 4)</code></em>, <strong><code>is_attn</code></strong>:<code>Union</code>[<code>typing.Tuple[bool, ...]</code>, <code>typing.List[int]</code>]=<em><code>(False, False, True, True)</code></em>, <strong><code>n_blocks</code></strong>:<code>int</code>=<em><code>2</code></em>) :: <code>Module</code></p>
+<h2 id="UNet" class="doc_header"><code>class</code> <code>UNet</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L304" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>UNet</code>(<strong><code>image_channels</code></strong>:<code>int</code>=<em><code>3</code></em>, <strong><code>n_channels</code></strong>:<code>int</code>=<em><code>64</code></em>, <strong><code>ch_mults</code></strong>:<code>Union</code>[<code>typing.Tuple[int, ...]</code>, <code>typing.List[int]</code>]=<em><code>(1, 2, 2, 4)</code></em>, <strong><code>is_attn</code></strong>:<code>Union</code>[<code>typing.Tuple[bool, ...]</code>, <code>typing.List[int]</code>]=<em><code>(False, False, True, True)</code></em>, <strong><code>n_blocks</code></strong>:<code>int</code>=<em><code>2</code></em>) :: <code>Module</code></p>
 </blockquote>
 <h2 id="U-Net">U-Net<a class="anchor-link" href="#U-Net"> </a></h2>
 </div>
@@ -390,7 +438,7 @@ This block is applied at the lowest resolution of the U-Net.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="DISC" class="doc_header"><code>class</code> <code>DISC</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L445" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>DISC</code>(<strong><code>image_channels</code></strong>:<code>int</code>=<em><code>3</code></em>, <strong><code>n_channels</code></strong>:<code>int</code>=<em><code>64</code></em>, <strong><code>ch_mults</code></strong>:<code>Union</code>[<code>typing.Tuple[int, ...]</code>, <code>typing.List[int]</code>]=<em><code>(1, 2, 2, 4)</code></em>, <strong><code>is_attn</code></strong>:<code>Union</code>[<code>typing.Tuple[bool, ...]</code>, <code>typing.List[int]</code>]=<em><code>(False, False, True, True)</code></em>, <strong><code>n_blocks</code></strong>:<code>int</code>=<em><code>2</code></em>) :: <code>Module</code></p>
+<h2 id="DISC" class="doc_header"><code>class</code> <code>DISC</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L440" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>DISC</code>(<strong><code>image_channels</code></strong>:<code>int</code>=<em><code>3</code></em>, <strong><code>n_channels</code></strong>:<code>int</code>=<em><code>64</code></em>, <strong><code>ch_mults</code></strong>:<code>Union</code>[<code>typing.Tuple[int, ...]</code>, <code>typing.List[int]</code>]=<em><code>(1, 2, 2, 4)</code></em>, <strong><code>is_attn</code></strong>:<code>Union</code>[<code>typing.Tuple[bool, ...]</code>, <code>typing.List[int]</code>]=<em><code>(False, False, True, True)</code></em>, <strong><code>n_blocks</code></strong>:<code>int</code>=<em><code>2</code></em>) :: <code>Module</code></p>
 </blockquote>
 <p>Base class for all neural network modules.</p>
 <p>Your models should also subclass this class.</p>

@@ -4,22 +4,17 @@ __all__ = ['Swish', 'CLOOBEmbedding', 'ZEmbedding', 'TimeEmbedding', 'ResidualBl
            'UpBlock', 'MiddleBlock', 'Upsample', 'Downsample', 'UNet', 'DISC']
 
 # Cell
-
 import math
 from typing import Optional, Tuple, Union, List
-
 import torch
 from torch import nn
 
-# A fancy activation function
+# Cell
 class Swish(nn.Module):
-    """
-    ### Swish actiavation function
-    $$x \cdot \sigma(x)$$
-    """
-
     def forward(self, x):
         return x * torch.sigmoid(x)
+
+# Cell
 
 # CLOOB embedding
 class CLOOBEmbedding(nn.Module):
