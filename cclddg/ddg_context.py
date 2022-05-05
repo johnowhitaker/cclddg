@@ -4,6 +4,9 @@ __all__ = ['DDG_Context']
 
 # Cell
 import torch
+from PIL import Image
+import numpy as np
+
 class DDG_Context():
     """TODO docstring"""
     def __init__(self, n_steps=5, beta_min=0.3, beta_max=0.9, device='cpu'):
@@ -31,8 +34,11 @@ class DDG_Context():
         eps = torch.randn_like(x0)
         return mean + (var ** 0.5) * eps, eps
 
+    def tensor_to_image(self, t):
+      return Image.fromarray(np.array(((t.detach().cpu().squeeze().permute(1, 2, 0)+1)/2).clip(0, 1)*255).astype(np.uint8))
+
     # Examples with some propmts
-    def examples(self, ae_model, unet, n_examples=12, cfg_scale_max=4,
+    def examples(self, ae_model, unet, cloob, n_examples=12, cfg_scale_max=4,
              prompts = [
                 'A photograph portrait of a man with a beard, a human face',
                 'Green hills and grass beneath a blue sky',
@@ -43,8 +49,9 @@ class DDG_Context():
                 'A red stop sign'],
              img_size=128, z_dim=8,
             ):
-        """Given ae_model and u_net, produce some example images with CFG."""
+        """Given ae_model, a u_net and cloob, produce some example images with CFG."""
 
+        device = ae_model.device
         cfg_scale = torch.linspace(0, cfg_scale_max, n_examples).to(device)
 
         im_out = Image.new('RGB', (img_size*n_examples, img_size*len(prompts)))
@@ -54,16 +61,15 @@ class DDG_Context():
             c = cloob.text_encoder(cloob.tokenize([p]*n_examples).to(device)).float()
             c_neg = torch.zeros((n_examples,512), device=device)
             x = torch.randn(n_examples, 4, 16, 16).to(device)
-            t = torch.ones((n_examples,), dtype=torch.long).to(device)*n_steps
+            t = torch.ones((n_examples,), dtype=torch.long).to(device)*self.n_steps
             while t[0] > 0:
-                tm1 = torch.tensor(t.cpu().numpy()-1, dtype=torch.long).to(device)
                 pred_im_pos = unet(x.float(), t, c, z)
                 pred_im_neg = unet(x.float(), t, c_neg, z)
                 pred_im = pred_im_neg + (pred_im_pos-pred_im_neg)*cfg_scale.unsqueeze(-1).unsqueeze(-1).unsqueeze(-1).expand(-1, 4, 16, 16)
-                x, n = q_xt_x0(pred_im, tm1)
+                x, n = self.q_xt_x0(pred_im, t-1)
                 t -= 1
                 if t[0]==0:
                     for s in range(n_examples):
-                        im_out.paste(tensor_to_image(ae_model.decode(pred_im[s].unsqueeze(0))), (128*s, 128*i))
+                        im_out.paste(self.tensor_to_image(ae_model.decode(pred_im[s].unsqueeze(0))), (128*s, 128*i))
 
         return im_out

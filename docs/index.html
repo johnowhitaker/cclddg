@@ -6,8 +6,8 @@ title: CLOOB Conditioned Latent Denoising Diffusion GAN
 keywords: fastai
 sidebar: home_sidebar
 
-summary: "Summary description here."
-description: "Summary description here."
+summary: "My code and utilities for training CCLDDGs."
+description: "My code and utilities for training CCLDDGs."
 nb_path: "index.ipynb"
 ---
 <!--
@@ -31,7 +31,7 @@ nb_path: "index.ipynb"
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>This file will become your README and also the index of your documentation.</p>
+<p>This is very much a work in progress. Stay tuned for better info soon :)</p>
 
 </div>
 </div>
@@ -44,20 +44,29 @@ nb_path: "index.ipynb"
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p><code>pip install your_project_name</code></p>
+<p>At the moment I'd suggest cloning this and adding it to your path.</p>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="How-to-use">How to use<a class="anchor-link" href="#How-to-use"> </a></h2>
+<h2 id="What-is-all-this">What is all this<a class="anchor-link" href="#What-is-all-this"> </a></h2>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Fill me in please! Don't forget code examples:</p>
+<p>The main thing this code does is define a UNet architecture and an accompanying Discriminator architecture that can take in an image (or a latent representation of one) along with conditioning information (what timestep we're looking at, a CLOOB embedding of an image or caption) and a latent variable <code>z</code> used to turn the unet into a more GAN-like multimodal generator thingee.</p>
+<p>Coming soon, demos of this as</p>
+<ul>
+<li>A standard diffusion model</li>
+<li>A standard latent diffusion model</li>
+<li>A standard Defusion Denoising GAN</li>
+<li>A latent Defusion Denoising GAN</li>
+<li>CLOOB-Conditioned Latent Defusion Denoising GAN</li>
+<li>Training a text-to-image model with no text</li>
+</ul>
 
 </div>
 </div>
@@ -69,7 +78,7 @@ nb_path: "index.ipynb"
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="mi">1</span><span class="o">+</span><span class="mi">1</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="mi">3</span><span class="o">+</span><span class="mi">5</span>
 </pre></div>
 
     </div>
@@ -84,7 +93,7 @@ nb_path: "index.ipynb"
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>2</pre>
+<pre>8</pre>
 </div>
 
 </div>
