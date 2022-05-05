@@ -64,33 +64,7 @@ nb_path: "00_core.ipynb"
 <div class="output_markdown rendered_html output_subarea ">
 <h2 id="Swish" class="doc_header"><code>class</code> <code>Swish</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L13" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>Swish</code>() :: <code>Module</code></p>
 </blockquote>
-<p>Base class for all neural network modules.</p>
-<p>Your models should also subclass this class.</p>
-<p>Modules can also contain other Modules, allowing to nest them in
-a tree structure. You can assign the submodules as regular attributes::</p>
-
-<pre><code>import torch.nn as nn
-import torch.nn.functional as F
-
-class Model(nn.Module):
-    def __init__(self):
-        super().__init__()
-        self.conv1 = nn.Conv2d(1, 20, 5)
-        self.conv2 = nn.Conv2d(20, 20, 5)
-
-    def forward(self, x):
-        x = F.relu(self.conv1(x))
-        return F.relu(self.conv2(x))
-
-</code></pre>
-<p>Submodules assigned in this way will be registered, and will have their
-parameters converted too when you call :meth:<code>to</code>, etc.</p>
-<p>.. note::
-    As per the example above, an <code>__init__()</code> call to the parent class
-    must be made before assignment on the child.</p>
-<p>:ivar training: Boolean represents whether this module is in training or
-                evaluation mode.
-:vartype training: bool</p>
+<p><em>swish...</em> :)</p>
 
 </div>
 
@@ -116,21 +90,56 @@ parameters converted too when you call :meth:<code>to</code>, etc.</p>
 </div>
 </div>
 </div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<details class="description">
+      <summary data-open="Hide Code" data-close="Show Code"></summary>
+        <summary></summary>
+        <div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">swish</span> <span class="o">=</span> <span class="n">Swish</span><span class="p">()</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">8</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">swish</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+    </details>
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="data:image/png;base64,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
+"
+>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>Next, we want a way to create embeddings from various conditioning information.</p>
-<p>Explain time embedding</p>
 
 </div>
 </div>
 </div>
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
-</div>
-    {% endraw %}
-
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -142,9 +151,79 @@ parameters converted too when you call :meth:<code>to</code>, etc.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="TimeEmbedding" class="doc_header"><code>class</code> <code>TimeEmbedding</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L20" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>TimeEmbedding</code>(<strong><code>n_channels</code></strong>:<code>int</code>) :: <code>Module</code></p>
+<h2 id="TimeEmbedding" class="doc_header"><code>class</code> <code>TimeEmbedding</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L21" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>TimeEmbedding</code>(<strong><code>n_channels</code></strong>:<code>int</code>, <strong><code>denom_factor</code></strong>=<em><code>10000</code></em>) :: <code>Module</code></p>
 </blockquote>
-<h3 id="Embeddings-for-$t$">Embeddings for $t$<a class="anchor-link" href="#Embeddings-for-$t$"> </a></h3>
+<p>Embeddings for $t$</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The Positional Embedding used for <a href="/cclddg/core.html#TimeEmbedding"><code>TimeEmbedding</code></a> is a sinusoidal embedding as used in many transformer implementations:
+$$
+\begin{align}
+PE^{(1)}_{t,i} &amp;= sin\Bigg(\frac{t}{10000^{\frac{i}{d - 1}}}\Bigg) \\
+PE^{(2)}_{t,i} &amp;= cos\Bigg(\frac{t}{10000^{\frac{i}{d - 1}}}\Bigg)
+\end{align}
+$$</p>
+<p>where $d$ is <code>half_dim</code> = <code>n_channels//8</code></p>
+<p>Since we expect to encode only a small number of steps we can specify a smaller multiplier than 10000 using the <code>denom_factor</code> argument.</p>
+<p>These sinusoidal embeddings are usually then passed through an MLP to transform them into n_channels outputs, but we can pass in <code>return_sinusoidal_embs=True</code> to get the raw sinusoidal embeddings for visualization purposes. Here's an example visualizing this for t in range(0, 10):</p>
+
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<details class="description">
+      <summary data-open="Hide Code" data-close="Show Code"></summary>
+        <summary></summary>
+        <div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">te</span> <span class="o">=</span> <span class="n">TimeEmbedding</span><span class="p">(</span><span class="n">n_channels</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">denom_factor</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">embs</span> <span class="o">=</span> <span class="n">te</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">return_sinusoidal_embs</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">embs</span><span class="o">.</span><span class="n">shape</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">embs</span><span class="o">.</span><span class="n">detach</span><span class="p">(),</span> <span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Sinusoidal Encodings (sin component then cos)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Input (t)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+    </details>
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAXgAAAD+CAYAAAAwAx7XAAAAOXRFWHRTb2Z0d2FyZQBNYXRwbG90bGliIHZlcnNpb24zLjUuMSwgaHR0cHM6Ly9tYXRwbG90bGliLm9yZy/YYfK9AAAACXBIWXMAAAsTAAALEwEAmpwYAAAZZklEQVR4nO3de7xcZX3v8c83OztXAklIiBDQBERoBARMVURRLqflJtGKB1BUtJXaIwoUywtrW7Cn57zA4wXF1haoRoWiFkFRAYlcrZRLArmCCIRbQkKCYAghEEJ+54/1bJm9s2dndnjWnr0fvu/Xa7/2zFprfus3a2Z+88y6PI8iAjMzK8+wdidgZmb1cIE3MyuUC7yZWaFc4M3MCuUCb2ZWKBd4M7NCDW93Ao06thkbwydMbHcaZpvZe+Lqdqdg1quHH3uRJ596Sb3NG1QFfviEiex0xmntTsNsM3cc/6/tTsGsV2/508eazvMuGjOzQrnAm5kVygXezKxQLvBmZoVygTczK1StBV7S4ZLuk/SApLPqXJeZmXVXW4GX1AH8M3AEMAM4QdKMutZnZmbd1dmCfwvwQEQsjYgNwPeBWTWuz8zMGtRZ4KcCjWfgL0vTupF0sqS5kua+tG5djemYmb26tP0ga0RcGBEzI2Jmx9ix7U7HzKwYdRb45cAuDfd3TtPMzGwA1Fng7wR2lzRd0gjgeOCqGtdnZmYNautsLCI2SjoF+AXQAXwrIpbUtT4zM+uu1t4kI+Jq4Oo612FmZr1r+0FWMzOrhwu8mVmhXODNzArlAm9mVqhBNWTfrhNW8d33fT1rzGvW7pM1HsDcp1+XPeaja8Znj/nsulHZY774fA1vmQ01tDN6H6Jyq52y/K1Z4wEcM+Gu7DH3HPF09pgTh+V/zUeqM3vMYeR9zQE6NLTbwEM7ezMza8oF3sysUC7wZmaFcoE3MyuUC7yZWaFc4M3MCuUCb2ZWKBd4M7NCucCbmRXKBd7MrFAu8GZmhXKBNzMrlAu8mVmhXODNzArlAm9mVigXeDOzQrnAm5kVygXezKxQLvBmZoVygTczK9SgGnS7k01M6diQNebfbL8oazyAm8c8mD3mnHF7ZY+58Omp2WM+/sy22WOuf25k9pgvPd+RNd7c8/fLGg9gzjF7ZI/5wT3nZo952LjF2WPuOvy57DG3GzYie8xO8r6PADqVP2YzbsGbmRXKBd7MrFAu8GZmhXKBNzMrlAu8mVmhXODNzArlAm9mVqjaCrykXSTdKOkeSUsknVrXuszMbHN1Xui0ETgjIu6SNA6YJ2lORNxT4zrNzCyprQUfESsi4q50ey1wL5D/0kozM+vVgOyDlzQN2A+4vZd5J0uaK2nuU09tGoh0zMxeFWov8JK2AX4EnBYRz/ScHxEXRsTMiJg5caKP+ZqZ5VJrRZXUSVXcL42IK+pcl5mZdVfnWTQC/h24NyK+Utd6zMysd3W24A8EPgwcIml++juyxvWZmVmD2k6TjIj/AlRXfDMz65uPapqZFcoF3sysUC7wZmaFcoE3MyvUoBp0+761UzjohlOyxrzpkK9ljQdw8Oj834sdWpg95lCxQuOyx3yOUVnjbfcf87LGA9Cmt2aPeekxf5w9JjPyh3w1D+SdWxBN57kFb2ZWKBd4M7NCucCbmRXKBd7MrFAu8GZmhXKBNzMrlAu8mVmhXODNzArlAm9mVigXeDOzQrnAm5kVygXezKxQLvBmZoVygTczK5QLvJlZoVzgzcwK5QJvZlYoF3gzs0K5wJuZFcoF3sysUINq0O1RK19izy+uzRrzlOnHZo0H8J+v/2n2mPuPyPu8AVaPfTh7zGc25h3MGmD9xs7sMTdu7MgaLw7YJ2s8gAnX3pc95rod/yh7zOsm7Jk95pTONdljjh29NHvMTr2YPeY4KWu85kNuuwVvZlYsF3gzs0L1uYtG0ijgaOCdwE7AemAx8POIWFJ/emZmtrWaFnhJX6Aq7jcBtwOrgFHAG4BzU/E/IyIWDkCeZmbWT3214O+IiLObzPuKpB2A19aQk5mZZdB0H3xE/BxA0gd6zpP0gYhYFRFz60zOzMy2XisHWT/X4rReSeqQdLekn7WelpmZvVJ97YM/AjgSmCrp6w2ztgU29mMdpwL3pseZmdkA6asF/zgwD3g+/e/6uwr401aCS9oZOAq4+JWlaWZm/dW0BR8RC4AFki6NiK29nOt84Exg3FY+3szMtlLTFrykn0p6T5N5u0r6R0kf7+PxRwOrImJeXwlIOlnSXElzN7z0XMuJm5lZ3/o6TfITwF8D50t6ClhNdR78NOBB4BsR8ZM+Hn8gcIykI9PjtpV0SUSc2LhQRFwIXAiw3egd++pWwczM+qGvXTQrqXavnClpGrAj1ZWsv42ILTa1I+JzpLNtJL0b+GzP4m5mZvVpqTfJiHgYeLjWTMzMLKsB6S44Im6i6vLAzMwGiHuTNDMr1BYLvKRTW5lmZmaDSyst+I/2Mu2kzHmYmVlmfXVVcALwQWC6pKsaZo0Dnqo7MTMze2X6Osh6K7ACmAR8uWH6WsB9wJuZDXJ9nQf/CPAIcMBAJRMvbGDTg49kjfnQT9+cNR7ALz+Zv+eFo8Y8nz3mjJErssd8ZPSk7DFXP79N9pjrNuQdyPuJM/MO4g2w47H5B1qfckf+q8Ef3G1y9pjzJkzLHnOXEb/LHnO7YU9mj9mp/vTVuGXRx7DbWzxNUtJaXh64ewTQCayLCPcOaWY2iG2xwEfEH5qrkgTMAt5WZ1JmZvbK9es8+Kj8mBa7CzYzs/ZpZRfNnzXcHQbMpOoj3szMBrFWuipo7DJ4I1WfNLNqycbMzLJpZR/8xwYiETMzy6uVrgp2TYN/rJa0StJPJO06EMmZmdnWa+Ug638AP6TqD34n4D+By+pMyszMXrlWCvyYiPheRGxMf5dQjdBkZmaDWCsHWa+RdBbwfaoLno4DrpY0ESAi3C+Nmdkg1EqB/5/p/1/2mH48VcH3/ngzs0GolbNopg9EImZmlldLQ/ZJejswrXH5iPhuTTmZmVkGrVzJ+j1gN2A+8FKaHIALvJnZINZKC34mMCMimvdJaWZmg04rp0kuBl5TdyJmZpZXKy34ScA9ku4AXuiaGBHH1JaVmZm9Yq0U+HPqTsLMzPJr5TTJmwciETMzy6tpge8xVF+3WVRjf3jIPjOzQayvQbfzjyy9BRsnj2Hl8XkHyd7lqieyxgO44MhDs8c8+A1XZo+5S8em7DGnj1yVPebSUfkH8n5yfd6BvK9+Y/6zgt934F9lj9m5YGn2mOPuf2P2mIum75g95r7j8g8OPrVjTfaY44blHnS7uX4N2WdmZkOHC7yZWaFc4M3MCuUCb2ZWKBd4M7NCucCbmRWq1gIvabykyyX9RtK9kg6oc31mZvaylvqDfwW+BlwbEcdKGgGMqXl9ZmaW1FbgJW0HHAScBBARG4ANda3PzMy6q3MXzXRgNfBtSXdLuljS2BrXZ2ZmDeos8MOB/YFvRsR+wDrgrJ4LSTpZ0lxJczeuX1djOmZmry51FvhlwLKIuD3dv5yq4HcTERdGxMyImDl8tBv4Zma51FbgI2Il8JikPdKkQ4F76lqfmZl1V/dZNJ8GLk1n0CwFPlbz+szMLKm1wEfEfKpBu83MbID5SlYzs0K5wJuZFcoF3sysUC7wZmaFcoE3MytU3adJ9sv2k9dw0ievzhrzmgvGZ40H8OC8/J1i/nZ6X0Pnbp29R4zKHvO1w5/KHvM1I5/JHnP5yPFZ4/1yff6BwZfOGpk95utvzj9I9IT7X8we85E3bZc95tIp+Qfd3nPk49ljToy8r9GmaF473II3MyuUC7yZWaFc4M3MCuUCb2ZWKBd4M7NCucCbmRXKBd7MrFAu8GZmhXKBNzMrlAu8mVmhXODNzArlAm9mVigXeDOzQrnAm5kVygXezKxQLvBmZoVygTczK5QLvJlZoVzgzcwK5QJvZlaoQTXo9g4dL/Dp8Uuzxrxu92OzxgOYcsem7DHnHDEje8x9Rz6YPeaUjmezx9yhM/+g29t2Pp813t9+9yNZ4wF87AM3ZI9566Sp2WOOWfr77DE7V+YfxPyh3bbPHvN347bJHnOX4Xnf75tQ03luwZuZFcoF3sysUC7wZmaFcoE3MyuUC7yZWaFc4M3MClVrgZd0uqQlkhZLukzSqDrXZ2ZmL6utwEuaCnwGmBkRewEdwPF1rc/MzLqrexfNcGC0pOHAGODxmtdnZmZJbQU+IpYDXwIeBVYAayLiup7LSTpZ0lxJc5/8Xf4rRM3MXq3q3EUzAZgFTAd2AsZKOrHnchFxYUTMjIiZk7b3MV8zs1zqrKiHAQ9FxOqIeBG4Anh7jeszM7MGdRb4R4G3SRojScChwL01rs/MzBrUuQ/+duBy4C5gUVrXhXWtz8zMuqu1u+CIOBs4u851mJlZ73xU08ysUC7wZmaFcoE3MyuUC7yZWaFc4M3MCjWoBt2+//nxHHXfe7LGXD7rNVnjAbz2ivxd6ly78o3ZY35qfP7LDiZ2dGSPOTnzIMQA40eszxpv2gVLssYD+JtPLsoe88h9Dswec+Tc+7PHHLNicvaYy9aOzx7zie3zx3yuc1XWeH118OIWvJlZoVzgzcwK5QJvZlYoF3gzs0K5wJuZFcoF3sysUC7wZmaFcoE3MyuUC7yZWaFc4M3MCuUCb2ZWKBd4M7NCucCbmRXKBd7MrFAu8GZmhXKBNzMrlAu8mVmhXODNzArlAm9mVigXeDOzQiki2p3DH0haDTzSwqKTgCdrTicH55nXUMhzKOQIzjO3dub5uojodRTzQVXgWyVpbkTMbHceW+I88xoKeQ6FHMF55jZY8/QuGjOzQrnAm5kVaqgW+AvbnUCLnGdeQyHPoZAjOM/cBmWeQ3IfvJmZbdlQbcGbmdkWDLkCL+lwSfdJekDSWe3OpydJu0i6UdI9kpZIOrXdOfVFUoekuyX9rN25NCNpvKTLJf1G0r2SDmh3Tr2RdHp6zRdLukzSqHbnBCDpW5JWSVrcMG2ipDmS7k//J7Qzx5RTb3n+v/S6L5R0paTxbUyxK6fN8myYd4akkDSpHbn1NKQKvKQO4J+BI4AZwAmSZrQ3q81sBM6IiBnA24BPDcIcG50K3NvuJLbga8C1EbEn8CYGYb6SpgKfAWZGxF5AB3B8e7P6g9nA4T2mnQVcHxG7A9en++02m83znAPsFRH7AL8FPjfQSfViNpvniaRdgD8BHh3ohJoZUgUeeAvwQEQsjYgNwPeBWW3OqZuIWBERd6Xba6mK0dT2ZtU7STsDRwEXtzuXZiRtBxwE/DtARGyIiN+3NanmhgOjJQ0HxgCPtzkfACLiFuCpHpNnAd9Jt78DvHcgc+pNb3lGxHURsTHdvQ3YecAT66HJ9gT4KnAmMGgObA61Aj8VeKzh/jIGafEEkDQN2A+4vc2pNHM+1RtyU5vz6Mt0YDXw7bQr6WJJY9udVE8RsRz4ElXrbQWwJiKua29WfZoSESvS7ZXAlHYm06KPA9e0O4neSJoFLI+IBe3OpdFQK/BDhqRtgB8Bp0XEM+3OpydJRwOrImJeu3PZguHA/sA3I2I/YB2DY3dCN2kf9iyqL6SdgLGSTmxvVq2J6lS6QdPq7I2kz1Pt/ry03bn0JGkM8LfAP7Q7l56GWoFfDuzScH/nNG1QkdRJVdwvjYgr2p1PEwcCx0h6mGpX1yGSLmlvSr1aBiyLiK5fQZdTFfzB5jDgoYhYHREvAlcAb29zTn15QtKOAOn/qjbn05Skk4CjgQ/F4DyvezeqL/YF6fO0M3CXpNe0NSuGXoG/E9hd0nRJI6gOYl3V5py6kSSq/cX3RsRX2p1PMxHxuYjYOSKmUW3HGyJi0LU4I2Il8JikPdKkQ4F72phSM48Cb5M0Jr0HDmUQHgxucBXw0XT7o8BP2phLU5IOp9qNeExEPNfufHoTEYsiYoeImJY+T8uA/dN7t62GVIFPB1tOAX5B9eH5YUQsaW9WmzkQ+DBVi3h++juy3UkNcZ8GLpW0ENgX+L/tTWdz6RfG5cBdwCKqz9aguLpR0mXAfwN7SFom6c+Bc4H/Iel+ql8f57YzR2ia5zeAccCc9Fn617YmSdM8ByVfyWpmVqgh1YI3M7PWucCbmRXKBd7MrFAu8GZmhXKBNzMrlAt8DSR9PvUquDCd2vXWNP3igep4TNLVvfW8J+kcSZ/dwmN7XSZNX95w+uf8Onv3k/RwV698km6taz0p/mhJN6cO7Zot0+s2fbWQtG+zU357zmvlfdYukr4k6ZB25zEQhrc7gdKkrmyPprrQ4YVUoEYARMRfDFQeEVHXufdfjYgv1RS7qYio+6rQjwNXRMRLfeTwar+eYV9gJnB1P+cNNhcAFwE3tDuRurkFn9+OwJMR8QJARDwZEY8DSLpJ0sx0+1lJ/0fSAkm3SZqSps+WdGxXMEnPpv87SroltZoXS3pnmn6CpEVp2nkNj2ts/X5e0m8l/RewR8Myn5B0Z8rhR6lPjX6TdJKkKyRdq6p/8S82zDtc0l1pHdenaRMl/Tj9wrlN0j5p+vaSrku/fi4G1Mt2eHfajl39w1+arhxF0pFp2jxJX1fq417Suxp+cdwtaVwvT+NDpKs5+9jWD0uaJGmaqn7pL0q5XidpdC/bZYqqPswXpL+3p+l/neIulnRamjYt5T47vVaXSjpM0q/TNn1LWu4cSd+T9N9p+ifSdKnqO31xej8c18L2erOqXy3zJP1CL3ddcJOk8yTdkXJ5p6orx/8ROC5tl+ManmezeTNSrKWSPtOw/Ikp9nxJ/6b0q0lNPhM9tuk2kr6dnuNCSe9P0zf7HKga62B2wzY5HSAiHgG21yDoSqB2EeG/jH/ANsB8qr6r/wV4V8O8m6j6C4eqc6f3pNtfBP4u3Z4NHNvwmGfT/zOAz6fbHVRX9+1EdYn8ZKpfYzcA703LPAxMAt5MdWXlGGBb4AHgs2mZ7RvW80/Ap9Ptc7qW6fHczqHq+2d++rsxTT8JWApsB4wCHqHqM2gyVe+f09NyE9P/C4Cz0+1DgPnp9teBf0i3j0rbaFKP7fBuYA1Vfx/DqK4ofEdab+O6LgN+lm7/FDiw4fUZ3uN5jQBWNtzfbFv32KbTqDq+2jdN/yFwYi/b6wdUnc11xdmu4fUYm3JZQtXjaFfMvdPzmgd8i+pLbhbw44bXYAEwOuXyGNX74P1Ufad3UPUM+ShVY6PZ9uoEbgUmp7jHAd9qeJ9+Od0+Evhlw+v8jSbv+27zUp63AiNTnr9L6/yj9Hp0puX+BfhIX5+JHus5Dzi/4f4EmnwO0rae07Ds+IbbFwHvb3e9qPvPLfjMIuJZqjfWyVTd3P5AVWdJPW0AukZRmkf1Ae/LncDHJJ0D7B1VX/N/DNwUVQdXXT3tHdTjce8EroyI56Lq1bKx7569JP1K0iKqFuwbW3iKX42IfdPfwQ3Tr4+INRHxPFVfMa+jGvDkloh4CCAiuvrQfgfwvTTtBqrW1LYp90vS9J8DTzfJ4Y6IWBYRm6i+aKYBewJLu9ZFVeC7/Br4SmpFjo+X+xfvMgn4fcP93rZ1Tw9FxPx0u9nrdwjwzfR8XoqINem5XxkR69J75Qqq16gr5qL0vJZQbdOg+kJojP+TiFgfEU8CN1KNk/AO4LK0nieAm6neH8221x7AXqQuAIC/o3tf612d5LXy3mzm5xHxQspzFdUXz6FUn48703oPBXZNy7fymTiMatAfACLiaZp/DpYCu0q6QFWfNo29uq6i+mIomgt8DdKH7KaIOJuq75z397LYi+nDC/ASLx8P2Uh6XSQN4+X997dQvWmXA7MlfSRDqrOBUyJib+ALVK3grfVCw+3G51OHfq0rIs4F/oKq1ftrSXv2WGQ9Dc+9xW1dx/NtjLmp4f6mHvF79i+ypf5GestVwJKGL+u9I+JPennMK3luzdb7nYb17hER56Rlmn0mtkoq/m+i+kXySboPbDOK6nUvmgt8ZpL2kLR7w6R9qXZZtOphqhYOwDFUP2uR9DrgiYi4iOqNuj9wB/CutF+4AziBquXW6BbgvarOEhkHvKdh3jhgharujT/UjxxbdRtwkKTp6TlMTNN/1bU+Se+mOmbxTMr1g2n6EVQ/v1t1H1VrbVq637iPeLfUMj6PqnXercCnQtChNIZqk229Na4H/irF7FA1OtWvqF6PMaoGLnlfmtYfsySNkrQ91S6YO1OM49J6JlN9Qd3RR4z7gMlK49tK6pS0pV9wa6neM/2d1+h64FhJO6T1Tkzbu1VzgE913VHVD3+vnwNVx6CGRcSPqH6hNL6ObwA2G1O1NC7w+W0DfEfVoNsLqcaOPacfj7+I6s26ADiAaoALqD7ICyTdTVW8vhbViDxnUf1MXwDMi4hu3b5GNXzgD9L8a6iKQZe/pxpt6tfAb1rM73R1P01yWrMFI2I11a6qK9Lz+UGadQ7w5rR9zuXlbmu/QPWFsAT4M/oxtmVErAf+F3CtpHlUBWdNmn1aOtC2EHiR3kcFuo5qNwf0sq1bzaOHU4GD0y6wecCM9HrMpipKtwMXR8Td/Yy7kOo1vw3431EdxL8yTV9AtQ/6zOiju9qohrw8FjgvvTbz2XL/9TdSHTjtdpC1hXmN672Hqthel16POVTHClr1T8CE9HouAA7u43MwFbgp7Qq6hDSea2rQvB6Y24/1DknuTdKKIWmbiHhWkqj2094fEV9t8bH7A6dHxIdrTfIVSscFno02nKpaCknvozqN+e/bnUvd3IK3knwitdaWUJ2x8m+tPjC1rG9UHxc6WTGGA19udxIDwS14M7NCuQVvZlYoF3gzs0K5wJuZFcoF3sysUC7wZmaFcoE3MyvU/wea/mHIzBPH7AAAAABJRU5ErkJggg==
+"
+>
 </div>
 
 </div>
@@ -157,7 +236,7 @@ parameters converted too when you call :meth:<code>to</code>, etc.</p>
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>more text</p>
+<p>We also create embeddings to map a latent variable <code>z</code> and our CLOOB embedding to set numbers of channels. Both simply run the input through a small MLP to map them to <code>n_channels</code> outputs.</p>
 
 </div>
 </div>
@@ -173,35 +252,9 @@ parameters converted too when you call :meth:<code>to</code>, etc.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="CLOOBEmbedding" class="doc_header"><code>class</code> <code>CLOOBEmbedding</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L63" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>CLOOBEmbedding</code>(<strong><code>n_channels</code></strong>:<code>int</code>) :: <code>Module</code></p>
+<h2 id="CLOOBEmbedding" class="doc_header"><code>class</code> <code>CLOOBEmbedding</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L59" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>CLOOBEmbedding</code>(<strong><code>n_channels</code></strong>:<code>int</code>) :: <code>Module</code></p>
 </blockquote>
-<p>Base class for all neural network modules.</p>
-<p>Your models should also subclass this class.</p>
-<p>Modules can also contain other Modules, allowing to nest them in
-a tree structure. You can assign the submodules as regular attributes::</p>
-
-<pre><code>import torch.nn as nn
-import torch.nn.functional as F
-
-class Model(nn.Module):
-    def __init__(self):
-        super().__init__()
-        self.conv1 = nn.Conv2d(1, 20, 5)
-        self.conv2 = nn.Conv2d(20, 20, 5)
-
-    def forward(self, x):
-        x = F.relu(self.conv1(x))
-        return F.relu(self.conv2(x))
-
-</code></pre>
-<p>Submodules assigned in this way will be registered, and will have their
-parameters converted too when you call :meth:<code>to</code>, etc.</p>
-<p>.. note::
-    As per the example above, an <code>__init__()</code> call to the parent class
-    must be made before assignment on the child.</p>
-<p>:ivar training: Boolean represents whether this module is in training or
-                evaluation mode.
-:vartype training: bool</p>
+<p>Embedding to map a CLOOB embedding (512 dimensions) to n_channels via an MLP</p>
 
 </div>
 
@@ -224,35 +277,9 @@ parameters converted too when you call :meth:<code>to</code>, etc.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="ZEmbedding" class="doc_header"><code>class</code> <code>ZEmbedding</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L78" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>ZEmbedding</code>(<strong><code>z_dim</code></strong>:<code>int</code>, <strong><code>n_channels</code></strong>:<code>int</code>) :: <code>Module</code></p>
+<h2 id="ZEmbedding" class="doc_header"><code>class</code> <code>ZEmbedding</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L75" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>ZEmbedding</code>(<strong><code>z_dim</code></strong>:<code>int</code>, <strong><code>n_channels</code></strong>:<code>int</code>) :: <code>Module</code></p>
 </blockquote>
-<p>Base class for all neural network modules.</p>
-<p>Your models should also subclass this class.</p>
-<p>Modules can also contain other Modules, allowing to nest them in
-a tree structure. You can assign the submodules as regular attributes::</p>
-
-<pre><code>import torch.nn as nn
-import torch.nn.functional as F
-
-class Model(nn.Module):
-    def __init__(self):
-        super().__init__()
-        self.conv1 = nn.Conv2d(1, 20, 5)
-        self.conv2 = nn.Conv2d(20, 20, 5)
-
-    def forward(self, x):
-        x = F.relu(self.conv1(x))
-        return F.relu(self.conv2(x))
-
-</code></pre>
-<p>Submodules assigned in this way will be registered, and will have their
-parameters converted too when you call :meth:<code>to</code>, etc.</p>
-<p>.. note::
-    As per the example above, an <code>__init__()</code> call to the parent class
-    must be made before assignment on the child.</p>
-<p>:ivar training: Boolean represents whether this module is in training or
-                evaluation mode.
-:vartype training: bool</p>
+<p>Embedding to map a CLOOB embedding (<code>z_dim</code> dimensions) to n_channels via an MLP</p>
 
 </div>
 
@@ -289,7 +316,7 @@ parameters converted too when you call :meth:<code>to</code>, etc.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="ResidualBlock" class="doc_header"><code>class</code> <code>ResidualBlock</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L97" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>ResidualBlock</code>(<strong><code>in_channels</code></strong>:<code>int</code>, <strong><code>out_channels</code></strong>:<code>int</code>, <strong><code>time_channels</code></strong>:<code>int</code>, <strong><code>n_groups</code></strong>:<code>int</code>=<em><code>32</code></em>) :: <code>Module</code></p>
+<h2 id="ResidualBlock" class="doc_header"><code>class</code> <code>ResidualBlock</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L95" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>ResidualBlock</code>(<strong><code>in_channels</code></strong>:<code>int</code>, <strong><code>out_channels</code></strong>:<code>int</code>, <strong><code>time_channels</code></strong>:<code>int</code>, <strong><code>n_groups</code></strong>:<code>int</code>=<em><code>32</code></em>) :: <code>Module</code></p>
 </blockquote>
 <h3 id="Residual-block">Residual block<a class="anchor-link" href="#Residual-block"> </a></h3><p>A residual block has two convolution layers with group normalization.
 Each resolution is processed with two residual blocks.</p>
@@ -315,7 +342,7 @@ Each resolution is processed with two residual blocks.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="AttentionBlock" class="doc_header"><code>class</code> <code>AttentionBlock</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L148" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>AttentionBlock</code>(<strong><code>n_channels</code></strong>:<code>int</code>, <strong><code>n_heads</code></strong>:<code>int</code>=<em><code>1</code></em>, <strong><code>d_k</code></strong>:<code>int</code>=<em><code>None</code></em>, <strong><code>n_groups</code></strong>:<code>int</code>=<em><code>32</code></em>) :: <code>Module</code></p>
+<h2 id="AttentionBlock" class="doc_header"><code>class</code> <code>AttentionBlock</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L146" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>AttentionBlock</code>(<strong><code>n_channels</code></strong>:<code>int</code>, <strong><code>n_heads</code></strong>:<code>int</code>=<em><code>1</code></em>, <strong><code>d_k</code></strong>:<code>int</code>=<em><code>None</code></em>, <strong><code>n_groups</code></strong>:<code>int</code>=<em><code>32</code></em>) :: <code>Module</code></p>
 </blockquote>
 <h3 id="Attention-block">Attention block<a class="anchor-link" href="#Attention-block"> </a></h3><p>This is similar to <a href="../../transformers/mha.html">transformer multi-head attention</a>.</p>
 
@@ -340,7 +367,7 @@ Each resolution is processed with two residual blocks.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="DownBlock" class="doc_header"><code>class</code> <code>DownBlock</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L215" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>DownBlock</code>(<strong><code>in_channels</code></strong>:<code>int</code>, <strong><code>out_channels</code></strong>:<code>int</code>, <strong><code>time_channels</code></strong>:<code>int</code>, <strong><code>has_attn</code></strong>:<code>bool</code>) :: <code>Module</code></p>
+<h2 id="DownBlock" class="doc_header"><code>class</code> <code>DownBlock</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L213" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>DownBlock</code>(<strong><code>in_channels</code></strong>:<code>int</code>, <strong><code>out_channels</code></strong>:<code>int</code>, <strong><code>time_channels</code></strong>:<code>int</code>, <strong><code>has_attn</code></strong>:<code>bool</code>) :: <code>Module</code></p>
 </blockquote>
 <h3 id="Down-block">Down block<a class="anchor-link" href="#Down-block"> </a></h3><p>This combines <a href="/cclddg/core.html#ResidualBlock"><code>ResidualBlock</code></a> and <a href="/cclddg/core.html#AttentionBlock"><code>AttentionBlock</code></a>. These are used in the first half of U-Net at each resolution.</p>
 
@@ -365,7 +392,7 @@ Each resolution is processed with two residual blocks.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="UpBlock" class="doc_header"><code>class</code> <code>UpBlock</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L235" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>UpBlock</code>(<strong><code>in_channels</code></strong>:<code>int</code>, <strong><code>out_channels</code></strong>:<code>int</code>, <strong><code>time_channels</code></strong>:<code>int</code>, <strong><code>has_attn</code></strong>:<code>bool</code>) :: <code>Module</code></p>
+<h2 id="UpBlock" class="doc_header"><code>class</code> <code>UpBlock</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L233" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>UpBlock</code>(<strong><code>in_channels</code></strong>:<code>int</code>, <strong><code>out_channels</code></strong>:<code>int</code>, <strong><code>time_channels</code></strong>:<code>int</code>, <strong><code>has_attn</code></strong>:<code>bool</code>) :: <code>Module</code></p>
 </blockquote>
 <h3 id="Up-block">Up block<a class="anchor-link" href="#Up-block"> </a></h3><p>This combines <a href="/cclddg/core.html#ResidualBlock"><code>ResidualBlock</code></a> and <a href="/cclddg/core.html#AttentionBlock"><code>AttentionBlock</code></a>. These are used in the second half of U-Net at each resolution.</p>
 
@@ -390,7 +417,7 @@ Each resolution is processed with two residual blocks.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="MiddleBlock" class="doc_header"><code>class</code> <code>MiddleBlock</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L257" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>MiddleBlock</code>(<strong><code>n_channels</code></strong>:<code>int</code>, <strong><code>time_channels</code></strong>:<code>int</code>) :: <code>Module</code></p>
+<h2 id="MiddleBlock" class="doc_header"><code>class</code> <code>MiddleBlock</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L255" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>MiddleBlock</code>(<strong><code>n_channels</code></strong>:<code>int</code>, <strong><code>time_channels</code></strong>:<code>int</code>) :: <code>Module</code></p>
 </blockquote>
 <h3 id="Middle-block">Middle block<a class="anchor-link" href="#Middle-block"> </a></h3><p>It combines a <a href="/cclddg/core.html#ResidualBlock"><code>ResidualBlock</code></a>, <a href="/cclddg/core.html#AttentionBlock"><code>AttentionBlock</code></a>, followed by another <a href="/cclddg/core.html#ResidualBlock"><code>ResidualBlock</code></a>.
 This block is applied at the lowest resolution of the U-Net.</p>
@@ -416,9 +443,9 @@ This block is applied at the lowest resolution of the U-Net.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="Upsample" class="doc_header"><code>class</code> <code>Upsample</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L277" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>Upsample</code>(<strong><code>n_channels</code></strong>) :: <code>Module</code></p>
+<h2 id="Upsample" class="doc_header"><code>class</code> <code>Upsample</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L275" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>Upsample</code>(<strong><code>n_channels</code></strong>) :: <code>Module</code></p>
 </blockquote>
-<h3 id="Scale-up-the-feature-map-by-$2--imes$">Scale up the feature map by $2  imes$<a class="anchor-link" href="#Scale-up-the-feature-map-by-$2--imes$"> </a></h3>
+<h3 id="Scale-up-the-feature-map-by-2.">Scale up the feature map by 2.<a class="anchor-link" href="#Scale-up-the-feature-map-by-2."> </a></h3>
 </div>
 
 </div>
@@ -440,10 +467,9 @@ This block is applied at the lowest resolution of the U-Net.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="Downsample" class="doc_header"><code>class</code> <code>Downsample</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L293" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>Downsample</code>(<strong><code>n_channels</code></strong>) :: <code>Module</code></p>
+<h2 id="Downsample" class="doc_header"><code>class</code> <code>Downsample</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L291" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>Downsample</code>(<strong><code>n_channels</code></strong>) :: <code>Module</code></p>
 </blockquote>
-<h3>Scale down the feature map by $rac{1}{2}       imes$</h3>
-
+<h3 id="Scale-down-the-feature-map-by-0.5">Scale down the feature map by 0.5<a class="anchor-link" href="#Scale-down-the-feature-map-by-0.5"> </a></h3>
 </div>
 
 </div>
@@ -478,7 +504,7 @@ This block is applied at the lowest resolution of the U-Net.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="UNet" class="doc_header"><code>class</code> <code>UNet</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L313" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>UNet</code>(<strong><code>image_channels</code></strong>:<code>int</code>=<em><code>3</code></em>, <strong><code>n_channels</code></strong>:<code>int</code>=<em><code>64</code></em>, <strong><code>ch_mults</code></strong>:<code>Union</code>[<code>typing.Tuple[int, ...]</code>, <code>typing.List[int]</code>]=<em><code>(1, 2, 2, 4)</code></em>, <strong><code>is_attn</code></strong>:<code>Union</code>[<code>typing.Tuple[bool, ...]</code>, <code>typing.List[int]</code>]=<em><code>(False, False, True, True)</code></em>, <strong><code>n_blocks</code></strong>:<code>int</code>=<em><code>2</code></em>) :: <code>Module</code></p>
+<h2 id="UNet" class="doc_header"><code>class</code> <code>UNet</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L311" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>UNet</code>(<strong><code>image_channels</code></strong>:<code>int</code>=<em><code>3</code></em>, <strong><code>n_channels</code></strong>:<code>int</code>=<em><code>64</code></em>, <strong><code>ch_mults</code></strong>:<code>Union</code>[<code>typing.Tuple[int, ...]</code>, <code>typing.List[int]</code>]=<em><code>(1, 2, 2, 4)</code></em>, <strong><code>is_attn</code></strong>:<code>Union</code>[<code>typing.Tuple[bool, ...]</code>, <code>typing.List[int]</code>]=<em><code>(False, False, True, True)</code></em>, <strong><code>n_blocks</code></strong>:<code>int</code>=<em><code>2</code></em>) :: <code>Module</code></p>
 </blockquote>
 <h2 id="U-Net">U-Net<a class="anchor-link" href="#U-Net"> </a></h2>
 </div>
@@ -502,7 +528,7 @@ This block is applied at the lowest resolution of the U-Net.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="DISC" class="doc_header"><code>class</code> <code>DISC</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L449" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>DISC</code>(<strong><code>image_channels</code></strong>:<code>int</code>=<em><code>3</code></em>, <strong><code>n_channels</code></strong>:<code>int</code>=<em><code>64</code></em>, <strong><code>ch_mults</code></strong>:<code>Union</code>[<code>typing.Tuple[int, ...]</code>, <code>typing.List[int]</code>]=<em><code>(1, 2, 2, 4)</code></em>, <strong><code>is_attn</code></strong>:<code>Union</code>[<code>typing.Tuple[bool, ...]</code>, <code>typing.List[int]</code>]=<em><code>(False, False, True, True)</code></em>, <strong><code>n_blocks</code></strong>:<code>int</code>=<em><code>2</code></em>) :: <code>Module</code></p>
+<h2 id="DISC" class="doc_header"><code>class</code> <code>DISC</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L447" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>DISC</code>(<strong><code>image_channels</code></strong>:<code>int</code>=<em><code>3</code></em>, <strong><code>n_channels</code></strong>:<code>int</code>=<em><code>64</code></em>, <strong><code>ch_mults</code></strong>:<code>Union</code>[<code>typing.Tuple[int, ...]</code>, <code>typing.List[int]</code>]=<em><code>(1, 2, 2, 4)</code></em>, <strong><code>is_attn</code></strong>:<code>Union</code>[<code>typing.Tuple[bool, ...]</code>, <code>typing.List[int]</code>]=<em><code>(False, False, True, True)</code></em>, <strong><code>n_blocks</code></strong>:<code>int</code>=<em><code>2</code></em>) :: <code>Module</code></p>
 </blockquote>
 <p>Base class for all neural network modules.</p>
 <p>Your models should also subclass this class.</p>
