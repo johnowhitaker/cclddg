@@ -11,7 +11,7 @@ from torch import nn
 
 # Cell
 class Swish(nn.Module):
-    """ *swish...* :) """
+    """ *swish...* """
     def forward(self, x):
         return x * torch.sigmoid(x)
 
@@ -77,6 +77,7 @@ class ZEmbedding(nn.Module):
     def __init__(self, z_dim:int, n_channels: int):
         super().__init__()
         self.n_channels = n_channels
+        self.z_dim = z_dim
         self.lin1 = nn.Linear(z_dim, self.n_channels)
         self.act = Swish()
         self.lin2 = nn.Linear(self.n_channels, self.n_channels)
@@ -99,7 +100,7 @@ class ResidualBlock(nn.Module):
     Each resolution is processed with two residual blocks.
     """
 
-    def __init__(self, in_channels: int, out_channels: int, time_channels: int, n_groups: int = 32):
+    def __init__(self, in_channels: int, out_channels: int, n_cond_channels: int, n_groups: int = 32):
         """
         * `in_channels` is the number of input channels
         * `out_channels` is the number of input channels
@@ -124,10 +125,10 @@ class ResidualBlock(nn.Module):
         else:
             self.shortcut = nn.Identity()
 
-        # Linear layer for time embeddings
-        self.time_emb = nn.Linear(time_channels, out_channels)
+        # Linear layer for conditional embeddings
+        self.cond_emb = nn.Linear(n_cond_channels, out_channels)
 
-    def forward(self, x: torch.Tensor, t: torch.Tensor):
+    def forward(self, x: torch.Tensor, cond: torch.Tensor):
         """
         * `x` has shape `[batch_size, in_channels, height, width]`
         * `t` has shape `[batch_size, time_channels]`
@@ -135,7 +136,7 @@ class ResidualBlock(nn.Module):
         # First convolution layer
         h = self.conv1(self.act1(self.norm1(x)))
         # Add time embeddings
-        h += self.time_emb(t)[:, :, None, None]
+        h += self.cond_emb(cond)[:, :, None, None]
         # Second convolution layer
         h = self.conv2(self.act2(self.norm2(h)))
 
@@ -173,14 +174,14 @@ class AttentionBlock(nn.Module):
         self.n_heads = n_heads
         self.d_k = d_k
 
-    def forward(self, x: torch.Tensor, t: Optional[torch.Tensor] = None):
+    def forward(self, x: torch.Tensor, cond: Optional[torch.Tensor] = None):
         """
         * `x` has shape `[batch_size, in_channels, height, width]`
         * `t` has shape `[batch_size, time_channels]`
         """
-        # `t` is not used, but it's kept in the arguments because for the attention layer function signature
+        # `cond` is not used, but it's kept in the arguments because for the attention layer function signature
         # to match with `ResidualBlock`.
-        _ = t
+        _ = cond
         # Get shape
         batch_size, n_channels, height, width = x.shape
         # Change `x` to shape `[batch_size, seq, n_channels]`
@@ -224,8 +225,8 @@ class DownBlock(nn.Module):
         else:
             self.attn = nn.Identity()
 
-    def forward(self, x: torch.Tensor, t: torch.Tensor):
-        x = self.res(x, t)
+    def forward(self, x: torch.Tensor, cond: torch.Tensor):
+        x = self.res(x, cond)
         x = self.attn(x)
         return x
 
@@ -236,18 +237,18 @@ class UpBlock(nn.Module):
     This combines `ResidualBlock` and `AttentionBlock`. These are used in the second half of U-Net at each resolution.
     """
 
-    def __init__(self, in_channels: int, out_channels: int, time_channels: int, has_attn: bool):
+    def __init__(self, in_channels: int, out_channels: int, n_cond_channels: int, has_attn: bool):
         super().__init__()
         # The input has `in_channels + out_channels` because we concatenate the output of the same resolution
         # from the first half of the U-Net
-        self.res = ResidualBlock(in_channels + out_channels, out_channels, time_channels)
+        self.res = ResidualBlock(in_channels + out_channels, out_channels, n_cond_channels)
         if has_attn:
             self.attn = AttentionBlock(out_channels)
         else:
             self.attn = nn.Identity()
 
-    def forward(self, x: torch.Tensor, t: torch.Tensor):
-        x = self.res(x, t)
+    def forward(self, x: torch.Tensor, cond: torch.Tensor):
+        x = self.res(x, cond)
         x = self.attn(x)
         return x
 
@@ -259,16 +260,16 @@ class MiddleBlock(nn.Module):
     This block is applied at the lowest resolution of the U-Net.
     """
 
-    def __init__(self, n_channels: int, time_channels: int):
+    def __init__(self, n_channels: int, n_cond_channels: int):
         super().__init__()
-        self.res1 = ResidualBlock(n_channels, n_channels, time_channels)
+        self.res1 = ResidualBlock(n_channels, n_channels, n_cond_channels)
         self.attn = AttentionBlock(n_channels)
-        self.res2 = ResidualBlock(n_channels, n_channels, time_channels)
+        self.res2 = ResidualBlock(n_channels, n_channels, n_cond_channels)
 
-    def forward(self, x: torch.Tensor, t: torch.Tensor):
-        x = self.res1(x, t)
+    def forward(self, x: torch.Tensor, cond: torch.Tensor):
+        x = self.res1(x, cond)
         x = self.attn(x)
-        x = self.res2(x, t)
+        x = self.res2(x, cond)
         return x
 
 
@@ -281,10 +282,10 @@ class Upsample(nn.Module):
         super().__init__()
         self.conv = nn.ConvTranspose2d(n_channels, n_channels, (4, 4), (2, 2), (1, 1))
 
-    def forward(self, x: torch.Tensor, t: torch.Tensor):
-        # `t` is not used, but it's kept in the arguments because for the attention layer function signature
+    def forward(self, x: torch.Tensor, cond: torch.Tensor):
+        # `cond` is not used, but it's kept in the arguments because for the attention layer function signature
         # to match with `ResidualBlock`.
-        _ = t
+        _ = cond
         return self.conv(x)
 
 
@@ -297,10 +298,10 @@ class Downsample(nn.Module):
         super().__init__()
         self.conv = nn.Conv2d(n_channels, n_channels, (3, 3), (2, 2), (1, 1))
 
-    def forward(self, x: torch.Tensor, t: torch.Tensor):
-        # `t` is not used, but it's kept in the arguments because for the attention layer function signature
+    def forward(self, x: torch.Tensor, cond: torch.Tensor):
+        # `cond` is not used, but it's kept in the arguments because for the attention layer function signature
         # to match with `ResidualBlock`.
-        _ = t
+        _ = cond
         return self.conv(x)
 
 
@@ -311,12 +312,30 @@ class Downsample(nn.Module):
 class UNet(nn.Module):
     """
     ## U-Net
+
+        * `image_channels` is the number of channels in the image. $3$ for RGB.
+        * `n_channels` is number of channels in the initial feature map that we transform the image into
+        * `ch_mults` is the list of channel numbers at each resolution. The number of channels is `ch_mults[i] * n_channels`
+        * `is_attn` is a list of booleans that indicate whether to use attention at each resolution
+        * `n_blocks` is the number of `UpDownBlocks` at each resolution
+        * `use_z`=True. Set to false if you don't want to include the latent z input
+        * `z_dim` is the dimension of the latent `z`, and `n_z_channels` is the size of the embedding used for it.
+        * `use_cloob` = True. Set to false if you don't want to use CLOOB conditioning.
+        * `n_cloob_channels` - the size of the embedding used for the CLOOB conditioning input.
+        * `n_time_channels` - the size of the time embedding. If -1, this is set to n_channels*4
+        * `denom_factor` - 100 by default, set to 10,000 if wanting to do more traditional diffusion stuff where n_steps is high.
     """
 
     def __init__(self, image_channels: int = 3, n_channels: int = 64,
                  ch_mults: Union[Tuple[int, ...], List[int]] = (1, 2, 2, 4),
                  is_attn: Union[Tuple[bool, ...], List[int]] = (False, False, True, True),
-                 n_blocks: int = 2):
+                 n_blocks: int = 2,
+                 use_z=True,z_dim: int = 8, n_z_channels: int=16,
+                 use_cloob=True, n_cloob_channels: int = 256,
+                 n_time_channels: int=-1,
+                 denom_factor: int=100
+
+                ):
         """
         * `image_channels` is the number of channels in the image. $3$ for RGB.
         * `n_channels` is number of channels in the initial feature map that we transform the image into
@@ -332,23 +351,24 @@ class UNet(nn.Module):
         # Project image into feature map
         self.image_proj = nn.Conv2d(image_channels, n_channels, kernel_size=(3, 3), padding=(1, 1))
 
-        # TODO n_time_channels, n_cloob_channels
-        # n_z_channels and z_dim should be args
-        # TODO both c and z should be optional
 
-        # Time embedding layer. Time embedding has `n_channels * 4` channels in the original, here 2 (to make room for cloob
+        # Time embedding layer. Time embedding has `n_channels * 4` channels in the original paper, with demon_factor=10,000
         n_time_channels = n_channels * 4
-        self.time_emb = TimeEmbedding(n_time_channels)
+        self.time_emb = TimeEmbedding(n_time_channels, denom_factor=denom_factor)
 
         # CLOOB embeddings
-        n_cloob_channels  = n_channels * 4
+        self.use_cloob = use_cloob
         self.cloob_emb = CLOOBEmbedding(n_cloob_channels)
 
         # Z embeddings
-        n_z_channels = 16 #128
-        self.z_emb = ZEmbedding(z_dim=8, n_channels=n_z_channels) # Change z_dim programatically (must also match disc?)
+        self.use_z = use_z
+        self.z_emb = ZEmbedding(z_dim=z_dim, n_channels=n_z_channels)
 
-        n_cond_channels = n_time_channels+n_cloob_channels+n_z_channels
+        n_cond_channels = n_time_channels
+        if use_cloob:
+            n_cond_channels += n_cloob_channels
+        if use_z:
+            n_cond_channels += n_z_channels
 
         # #### First half of U-Net - decreasing resolution
         down = []
@@ -398,22 +418,30 @@ class UNet(nn.Module):
         self.act = Swish()
         self.final = nn.Conv2d(in_channels, image_channels, kernel_size=(3, 3), padding=(1, 1))
 
-    def forward(self, x: torch.Tensor, t: torch.Tensor, c:torch.Tensor, z:torch.Tensor):
+    def forward(self, x: torch.Tensor, t: torch.Tensor, c=None, z=None):
         """
         * `x` has shape `[batch_size, in_channels, height, width]`
         * `t` has shape `[batch_size]`
+        * `c` is cloob embeddings shape [batch_size, 512]
+        * `z` is latent input shape [batch_size, z_dim]
         """
 
-        # Get time-step embeddings
+        # The combined embeddings become our conditioning info (n_cond_channels total) fed in at various stages.
+        # Starting with the time-step embeddings
         t = self.time_emb(t)
+        cond = t
 
-        # TODO handle when c and or z are None
-        # TODO both c and z should be optional
-
-        # Combine with the cloob & z embeddings (hackity hack)
-        c = self.cloob_emb(c)
-        z = self.z_emb(z)
-        t = torch.cat((t, c, z), dim=1)
+        # Combine with the cloob & z embeddings (if applicable)
+        if self.use_cloob:
+            if c==None:
+                c = torch.zeros((x.shape[0], 512))
+            c = self.cloob_emb(c)
+            cond = torch.cat((cond, c), dim=1)
+        if self.use_z:
+            if z==None:
+                z = torch.zeros((x.shape[0], self.z_emb.z_dim))
+            z = self.z_emb(z)
+            cond = torch.cat((cond, z), dim=1)
 
         # Get image projection
         x = self.image_proj(x)
@@ -422,27 +450,30 @@ class UNet(nn.Module):
         h = [x]
         # First half of U-Net
         for m in self.down:
-            x = m(x, t)
+            x = m(x, cond)
             h.append(x)
 
         # Middle (bottom)
-        x = self.middle(x, t)
+        x = self.middle(x, cond)
 
         # Second half of U-Net
         for m in self.up:
             if isinstance(m, Upsample):
-                x = m(x, t)
+                x = m(x, cond)
             else:
                 # Get the skip connection from first half of U-Net and concatenate
                 s = h.pop()
                 x = torch.cat((x, s), dim=1)
-                #
-                x = m(x, t)
+                # Add in conditioning
+                x = m(x, cond)
 
         # Final normalization and convolution
         return self.final(self.act(self.norm(x)))
 
 
+
+
+# Cell
 #@title DISC
 class DISC(nn.Module):
     def __init__(self, image_channels: int = 3, n_channels: int = 64,
