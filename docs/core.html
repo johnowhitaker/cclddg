@@ -84,7 +84,7 @@ nb_path: "00_core.ipynb"
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>This is what it looks like:</p>
+<p>You can think of this as 'fancy ReLU'... This is what it looks like:</p>
 
 </div>
 </div>
@@ -311,7 +311,7 @@ $$</p>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>And the rest of the building blocks:</p>
+<p>The rest of the building blocks are fairly standard, but all here take both an input (x) and some conditioning (cond).</p>
 
 </div>
 </div>
@@ -500,7 +500,8 @@ This block is applied at the lowest resolution of the U-Net.</p>
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="The-UNet-and-Discriminator">The UNet and Discriminator<a class="anchor-link" href="#The-UNet-and-Discriminator"> </a></h2>
+<h2 id="The-UNet-and-Discriminator">The UNet and Discriminator<a class="anchor-link" href="#The-UNet-and-Discriminator"> </a></h2><p>This is what we've been building up to. We want a UNet mode that can take in a (noisy) image or image-like tensor, along with some conditioning information (timestep, CLOOB embedding) and optionally a latent <code>z</code>, and produce an output of the same shape as the input.</p>
+
 </div>
 </div>
 </div>
@@ -517,7 +518,7 @@ This block is applied at the lowest resolution of the U-Net.</p>
 <div class="output_markdown rendered_html output_subarea ">
 <h2 id="UNet" class="doc_header"><code>class</code> <code>UNet</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L312" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>UNet</code>(<strong><code>image_channels</code></strong>:<code>int</code>=<em><code>3</code></em>, <strong><code>n_channels</code></strong>:<code>int</code>=<em><code>64</code></em>, <strong><code>ch_mults</code></strong>:<code>Union</code>[<code>typing.Tuple[int, ...]</code>, <code>typing.List[int]</code>]=<em><code>(1, 2, 2, 4)</code></em>, <strong><code>is_attn</code></strong>:<code>Union</code>[<code>typing.Tuple[bool, ...]</code>, <code>typing.List[int]</code>]=<em><code>(False, False, True, True)</code></em>, <strong><code>n_blocks</code></strong>:<code>int</code>=<em><code>2</code></em>, <strong><code>use_z</code></strong>=<em><code>True</code></em>, <strong><code>z_dim</code></strong>:<code>int</code>=<em><code>8</code></em>, <strong><code>n_z_channels</code></strong>:<code>int</code>=<em><code>16</code></em>, <strong><code>use_cloob</code></strong>=<em><code>True</code></em>, <strong><code>n_cloob_channels</code></strong>:<code>int</code>=<em><code>256</code></em>, <strong><code>n_time_channels</code></strong>:<code>int</code>=<em><code>-1</code></em>, <strong><code>denom_factor</code></strong>:<code>int</code>=<em><code>100</code></em>) :: <code>Module</code></p>
 </blockquote>
-<h2 id="U-Net">U-Net<a class="anchor-link" href="#U-Net"> </a></h2>
+<h4 id="U-Net">U-Net<a class="anchor-link" href="#U-Net"> </a></h4>
 <pre><code>* `image_channels` is the number of channels in the image. $3$ for RGB.
 * `n_channels` is number of channels in the initial feature map that we transform the image into
 * `ch_mults` is the list of channel numbers at each resolution. The number of channels is `ch_mults[i] * n_channels`
@@ -547,6 +548,13 @@ This block is applied at the lowest resolution of the U-Net.</p>
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We'd also like a Discriminator that can take in an image, with the same optional conditioning information, and spit out a classification (real or fake). If you want to condition the discriminator on another image (e.g. in DDG the discriminator takes in $x_{t-1}$ and is conditioned on $x_t$) then simply concatenate them together and use <code>image_channels = 2*[the number of channels in a single image]</code>.</p>
+
+</div>
+</div>
+</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -561,20 +569,17 @@ This block is applied at the lowest resolution of the U-Net.</p>
 <h2 id="Discriminator" class="doc_header"><code>class</code> <code>Discriminator</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/core.py#L468" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>Discriminator</code>(<strong><code>image_channels</code></strong>:<code>int</code>=<em><code>3</code></em>, <strong><code>n_channels</code></strong>:<code>int</code>=<em><code>64</code></em>, <strong><code>ch_mults</code></strong>:<code>Union</code>[<code>typing.Tuple[int, ...]</code>, <code>typing.List[int]</code>]=<em><code>(1, 2, 2, 4)</code></em>, <strong><code>is_attn</code></strong>:<code>Union</code>[<code>typing.Tuple[bool, ...]</code>, <code>typing.List[int]</code>]=<em><code>(False, False, True, True)</code></em>, <strong><code>n_blocks</code></strong>:<code>int</code>=<em><code>2</code></em>, <strong><code>use_cloob</code></strong>=<em><code>True</code></em>, <strong><code>n_cloob_channels</code></strong>:<code>int</code>=<em><code>256</code></em>, <strong><code>n_time_channels</code></strong>:<code>int</code>=<em><code>-1</code></em>, <strong><code>denom_factor</code></strong>:<code>int</code>=<em><code>100</code></em>) :: <code>Module</code></p>
 </blockquote>
 <p>Discriminator</p>
-<p>Based on the same architecture as the UNet, but without the upwards half of the unet.</p>
-<ul>
-<li><code>image_channels</code> is the number of channels in the image. $3$ for RGB.<ul>
-<li><code>n_channels</code> is number of channels in the initial feature map that we transform the image into</li>
-<li><code>ch_mults</code> is the list of channel numbers at each resolution. The number of channels is <code>ch_mults[i] * n_channels</code></li>
-<li><code>is_attn</code> is a list of booleans that indicate whether to use attention at each resolution</li>
-<li><code>n_blocks</code> is the number of <code>UpDownBlocks</code> at each resolution</li>
-<li><code>use_cloob</code> = True. Set to false if you don't want to use CLOOB conditioning.</li>
-<li><code>n_cloob_channels</code> - the size of the embedding used for the CLOOB conditioning input.</li>
-<li><code>n_time_channels</code> - the size of the time embedding. If -1, this is set to n_channels*4</li>
-<li><code>denom_factor</code> for the TimeEmbedding. 100 by default, set to 10,000 if wanting to do more traditional diffusion stuff where n_steps is high.</li>
-</ul>
-</li>
-</ul>
+<p>Based on the same architecture as the UNet, but without the upwards half.</p>
+
+<pre><code>* `image_channels` is the number of channels in the image. $3$ for RGB.
+* `n_channels` is number of channels in the initial feature map that we transform the image into
+* `ch_mults` is the list of channel numbers at each resolution. The number of channels is `ch_mults[i] * n_channels`
+* `is_attn` is a list of booleans that indicate whether to use attention at each resolution
+* `n_blocks` is the number of `UpDownBlocks` at each resolution
+* `use_cloob` = True. Set to false if you don't want to use CLOOB conditioning.
+* `n_cloob_channels` - the size of the embedding used for the CLOOB conditioning input.
+* `n_time_channels` - the size of the time embedding. If -1, this is set to n_channels*4
+* `denom_factor` for the TimeEmbedding. 100 by default, set to 10,000 if wanting to do more traditional diffusion stuff where n_steps is high.</code></pre>
 
 </div>
 
@@ -593,6 +598,13 @@ This block is applied at the lowest resolution of the U-Net.</p>
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Let's see both in action:</p>
+
+</div>
+</div>
+</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -675,8 +687,8 @@ This block is applied at the lowest resolution of the U-Net.</p>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">labels</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
-<span class="n">l</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BCELoss</span><span class="p">()</span>
-<span class="n">l</span><span class="p">(</span><span class="n">disc</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">labels</span><span class="p">)</span>
+<span class="n">criterion</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BCELoss</span><span class="p">()</span>
+<span class="n">criterion</span><span class="p">(</span><span class="n">disc</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">labels</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -691,46 +703,7 @@ This block is applied at the lowest resolution of the U-Net.</p>
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>tensor(0.7863, grad_fn=&lt;BinaryCrossEntropyBackward0&gt;)</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">unet</span> <span class="o">=</span> <span class="n">UNet</span><span class="p">(</span><span class="n">image_channels</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
-<span class="n">z</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mi">32</span><span class="p">),</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
-<span class="n">c</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mi">512</span><span class="p">),</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
-<span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
-<span class="n">t</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
-<span class="n">pred_im</span> <span class="o">=</span> <span class="n">unet</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">float</span><span class="p">(),</span> <span class="n">t</span><span class="p">)</span>
-<span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">pred_im</span><span class="o">.</span><span class="n">shape</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>(torch.Size([1, 4, 16, 16]), torch.Size([1, 4, 16, 16]))</pre>
+<pre>tensor(0.6967, grad_fn=&lt;BinaryCrossEntropyBackward0&gt;)</pre>
 </div>
 
 </div>

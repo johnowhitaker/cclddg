@@ -311,7 +311,7 @@ class Downsample(nn.Module):
 # The core class definition (aka the important bit)
 class UNet(nn.Module):
     """
-    ## U-Net
+    #### U-Net
 
         * `image_channels` is the number of channels in the image. $3$ for RGB.
         * `n_channels` is number of channels in the initial feature map that we transform the image into
@@ -470,9 +470,9 @@ class Discriminator(nn.Module):
 
     Discriminator
 
-    Based on the same architecture as the UNet, but without the upwards half of the unet.
+    Based on the same architecture as the UNet, but without the upwards half.
 
-    * `image_channels` is the number of channels in the image. $3$ for RGB.
+        * `image_channels` is the number of channels in the image. $3$ for RGB.
         * `n_channels` is number of channels in the initial feature map that we transform the image into
         * `ch_mults` is the list of channel numbers at each resolution. The number of channels is `ch_mults[i] * n_channels`
         * `is_attn` is a list of booleans that indicate whether to use attention at each resolution
