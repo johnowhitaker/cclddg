@@ -28,11 +28,21 @@ class DDG_Context():
         return mean + (var ** 0.5) * eps, eps
 
     def q_xt_x0(self, x0, t):
-        """ump to a given step"""
+        """Jump to a given step"""
         mean = self.gather(self.alpha_bar, t) ** 0.5 * x0 # now alpha_bar
         var = 1-self.gather(self.alpha_bar, t) # (1-alpha_bar)
         eps = torch.randn_like(x0)
         return mean + (var ** 0.5) * eps, eps
+
+    def p_xt(xt, noise, t):
+        """The reverse step, not used in DDG"""
+        alpha_t = self.gather(self.alpha, t)
+        alpha_bar_t = self.gather(self.alpha_bar, t)
+        eps_coef = (1 - alpha_t) / (1 - alpha_bar_t) ** .5
+        mean = 1 / (alpha_t ** 0.5) * (xt - eps_coef * noise) # Note minus sign
+        var = self.gather(self.beta, t)
+        eps = torch.randn(xt.shape, device=xt.device)
+        return mean + (var ** 0.5) * eps
 
     def tensor_to_image(self, t):
       return Image.fromarray(np.array(((t.detach().cpu().squeeze().permute(1, 2, 0)+1)/2).clip(0, 1)*255).astype(np.uint8))

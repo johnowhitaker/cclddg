@@ -106,7 +106,7 @@ nb_path: "index.ipynb"
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Running-the-training-script">Running the training script<a class="anchor-link" href="#Running-the-training-script"> </a></h1><p>This script is written to run OUTSIDE this directory (aka NOT in cclddg). It also assumes the locations of various dependancies and model files. To set it up, in a notebook run:</p>
+<h1 id="Running-the-training-script">Running the training script<a class="anchor-link" href="#Running-the-training-script"> </a></h1><p>The train script is written to run OUTSIDE this directory (aka NOT in cclddg). It also assumes the locations of various dependancies and model files. To set it up, in a notebook run:</p>
 
 </div>
 </div>
@@ -127,7 +127,7 @@ nb_path: "index.ipynb"
 <span class="c1"># !pip install --upgrade webdataset ipywidgets                                     &amp;&gt;&gt; install.log</span>
 <span class="c1"># !pip install datasets omegaconf einops wandb pytorch_lightning                   &amp;&gt;&gt; install.log</span>
 <span class="c1"># !wget https://ommer-lab.com/files/latent-diffusion/kl-f8.zip                     &amp;&gt;&gt; install.log</span>
-<span class="c1"># !unzip -q kl-f8.zip  </span>
+<span class="c1"># !unzip -q kl-f8.zip </span>
 </pre></div>
 
     </div>
@@ -143,7 +143,7 @@ nb_path: "index.ipynb"
 <p>Then copy the script from the cclddg folder downloaded as part of the command above to your local dir:</p>
 <p><code>cp cclddg/train_cclddg.py train.py</code></p>
 <p>And run your training like so:</p>
-<p><code>python train.py --z_dim 16 --n_channels_unet 64 --batch_size 64 --n_batches 20 --lr_gen 0.0001 --lr_disc 0.0001 --log_images_every 50 --save_models_every 500 --n_steps 8 --dataset celebA --wandb_project cclddg_faces</code></p>
+<p><code>python train.py --z_dim 16 --n_channels_unet 64 --batch_size 64 --n_batches 200 --lr_gen 0.0001 --lr_disc 0.0001 --log_images_every 50 --save_models_every 500 --n_steps 8 --dataset celebA --wandb_project cclddg_faces</code></p>
 
 </div>
 </div>
