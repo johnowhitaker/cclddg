@@ -20,7 +20,7 @@ Coming soon, demos of this as
 - CLOOB-Conditioned Latent Defusion Denoising GAN
 - Training a text-to-image model with no text
 
-```python
+```
 # for now here's a sum
 3+5
 ```

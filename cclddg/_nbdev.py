@@ -16,8 +16,10 @@ index = {"Swish": "00_core.ipynb",
          "UNet": "00_core.ipynb",
          "Discriminator": "00_core.ipynb",
          "DDG_Context": "01_DDG_Context.ipynb",
-         "CelebAData": "02_Datasets.ipynb",
-         "CC12M": "02_Datasets.ipynb"}
+         "tensor_to_image": "02_Datasets.ipynb",
+         "CelebADataset": "02_Datasets.ipynb",
+         "get_celebA_dl": "02_Datasets.ipynb",
+         "get_cc12m_dl": "02_Datasets.ipynb"}
 
 modules = ["core.py",
            "ddg_context.py",
