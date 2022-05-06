@@ -32,6 +32,14 @@ nb_path: "index.ipynb"
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>This is very much a work in progress. Stay tuned for better info soon :)</p>
+<p>In the meantime, the core ideas:</p>
+<ul>
+<li>Diffusion models gradually noise an image and learn the reverse process. Great but lots of steps means slow inference</li>
+<li>DDGs tweak the training to include a discriminator, and promise good results in very few steps at inference</li>
+<li>Latent diffusion means doing it in the latent space of some autoencoder, which is more efficient.</li>
+<li>We can condition these models with various extra info. I chose to use CLOOB embeddings as conditioning info. That way we can get these from images or text or both during training, and at inference feed in either text or images and use them as conditioning for the generation process. In theory this gives a nice way to do text-to-image!</li>
+</ul>
+<p>I tried training for a few hours on CC12M and while the results aren't photorealistic you can definitely see <em>something</em> of a prompt in the outputs - 'blue ocean waves' is mostly blue, for eg. Results from a longer trainging run soon.</p>
 
 </div>
 </div>
@@ -44,7 +52,7 @@ nb_path: "index.ipynb"
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>At the moment I'd suggest cloning this and adding it to your path.</p>
+<p>I might turn this into a package later, for now your best bet is to check out the colab(s) below or follow the instructions in 'Running the training script'.</p>
 
 </div>
 </div>
@@ -58,15 +66,14 @@ nb_path: "index.ipynb"
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>The main thing this code does is define a UNet architecture and an accompanying Discriminator architecture that can take in an image (or a latent representation of one) along with conditioning information (what timestep we're looking at, a CLOOB embedding of an image or caption) and a latent variable <code>z</code> used to turn the unet into a more GAN-like multimodal generator thingee.</p>
-<p>Coming soon, demos of this as</p>
+<p>Demos</p>
 <ul>
-<li>A standard diffusion model</li>
-<li>A standard latent diffusion model</li>
-<li>A standard Defusion Denoising GAN</li>
-<li>A latent Defusion Denoising GAN</li>
-<li>CLOOB-Conditioned Latent Defusion Denoising GAN</li>
-<li>Training a text-to-image model with no text</li>
+<li>A standard diffusion model TODO</li>
+<li>A standard latent diffusion model TODO</li>
+<li>A standard Defusion Denoising GAN TODO</li>
+<li>CLOOB-Conditioned Latent Defusion Denoising GAN: <a href="https://colab.research.google.com/drive/1T5LommNOw4cVr8bX6AO5QXJ7D1LyXz2m?usp=sharing">https://colab.research.google.com/drive/1T5LommNOw4cVr8bX6AO5QXJ7D1LyXz2m?usp=sharing</a> (faces)</li>
 </ul>
+<p>W&amp;B runs TODO</p>
 
 </div>
 </div>

@@ -4,21 +4,30 @@
 
 This is very much a work in progress. Stay tuned for better info soon :)
 
+In the meantime, the core ideas:
+
+- Diffusion models gradually noise an image and learn the reverse process. Great but lots of steps means slow inference
+- DDGs tweak the training to include a discriminator, and promise good results in very few steps at inference
+- Latent diffusion means doing it in the latent space of some autoencoder, which is more efficient.
+- We can condition these models with various extra info. I chose to use CLOOB embeddings as conditioning info. That way we can get these from images or text or both during training, and at inference feed in either text or images and use them as conditioning for the generation process. In theory this gives a nice way to do text-to-image!
+
+I tried training for a few hours on CC12M and while the results aren't photorealistic you can definitely see *something* of a prompt in the outputs - 'blue ocean waves' is mostly blue, for eg. Results from a longer trainging run soon.
+
 ## Install
 
-At the moment I'd suggest cloning this and adding it to your path.
+I might turn this into a package later, for now your best bet is to check out the colab(s) below or follow the instructions in 'Running the training script'.
 
 ## What is all this
 
 The main thing this code does is define a UNet architecture and an accompanying Discriminator architecture that can take in an image (or a latent representation of one) along with conditioning information (what timestep we're looking at, a CLOOB embedding of an image or caption) and a latent variable `z` used to turn the unet into a more GAN-like multimodal generator thingee. 
 
-Coming soon, demos of this as
-- A standard diffusion model
-- A standard latent diffusion model
-- A standard Defusion Denoising GAN
-- A latent Defusion Denoising GAN
-- CLOOB-Conditioned Latent Defusion Denoising GAN
-- Training a text-to-image model with no text
+Demos
+- A standard diffusion model TODO
+- A standard latent diffusion model TODO
+- A standard Defusion Denoising GAN TODO
+- CLOOB-Conditioned Latent Defusion Denoising GAN: https://colab.research.google.com/drive/1T5LommNOw4cVr8bX6AO5QXJ7D1LyXz2m?usp=sharing (faces)
+
+W&B runs TODO
 
 ```python
 # for now here's a sum
