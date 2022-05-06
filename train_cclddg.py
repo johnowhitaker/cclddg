@@ -40,8 +40,8 @@ import pprint
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
- # CLOOB setup
-    print('Setting up CLOOB')
+# CLOOB setup
+print('Setting up CLOOB')
 scale_224 = T.Resize(224)
 config = pretrained.get_config('cloob_laion_400m_vit_b_16_16_epochs')
 cloob = model_pt.get_pt_model(config)
@@ -227,8 +227,6 @@ def train(args):
         recon_loss = args.recon_loss_scale*l
         recon_loss.backward()
 
-        # TODO add a CLOOB loss?
-
         optim_gen.step() # Update the discriminator 
 
         losses.append(log)
@@ -244,18 +242,19 @@ def train(args):
         if (len(losses))%args.save_models_every==0:
             torch.save(unet.state_dict(), f'unet_cc12m_{len(losses):06}.ckpt')
             torch.save(disc.state_dict(), f'disc_cc12m_{len(losses):06}.ckpt')
+            
+        # TODO add a CLOOB metric for text-to-image runs
 
-
-    wandb.finish()
+    if args.wandb_project != 'None':
+        wandb.finish()
     
 import argparse
-
 parser = argparse.ArgumentParser(description='Train CCLDDG (quick test script)')
 parser.add_argument('--n_batches',type=int, default=10, help='How many batches should we train on')
 parser.add_argument('--dataset',type=str, default='celebA', help='What dataset?')
 parser.add_argument('--lr_gen',type=float, default=1e-4, help='LR for unet')
 parser.add_argument('--lr_disc',type=float, default=4e-5, help='LR for discriminator')
-parser.add_argument('--batch_size',type=int, default=128, help='batch size')
+parser.add_argument('--batch_size',type=int, default=32, help='batch size')
 parser.add_argument('--img_size',type=int, default=128, help='image resolution')
 parser.add_argument('--wandb_project',type=str, default='None', help="Leave as 'None' if you don't want to log to W&B")
 parser.add_argument('--log_images_every',type=int, default=50, help='How frequently log ims')
@@ -279,7 +278,7 @@ parser.add_argument('--weight_decay',type=float, default=1e-6, help='weight_deca
 
 parser.add_argument('--recon_loss_scale',type=float, default=1, help='How much weight do we put on recon loss')
 
-parser.add_argument('--pct_text',type=float, default=0.5, help='What percentage text vs im for cloob embed. default 0.5')
+parser.add_argument('--pct_text',type=float, default=0.1, help='What percentage text vs im for cloob embed. default 0.5')
 
 args = parser.parse_args()
 print('Training args:\n')
