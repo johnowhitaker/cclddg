@@ -34,7 +34,7 @@ class DDG_Context():
         eps = torch.randn_like(x0)
         return mean + (var ** 0.5) * eps, eps
 
-    def p_xt(xt, noise, t):
+    def p_xt(self, xt, noise, t):
         """The reverse step, not used in DDG"""
         alpha_t = self.gather(self.alpha, t)
         alpha_bar_t = self.gather(self.alpha_bar, t)
