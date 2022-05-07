@@ -137,7 +137,7 @@ def train(args):
     
     #LPIPS loss option
     lpips_loss_fn = None
-    if args.recon_loss_type == 'lpips':
+    if args.recon_loss_type == 'lpips' or args.recon_loss_type == 'both':
         lpips_loss_fn = lpips.LPIPS(net='alex').to(device)
 
     for i in tqdm(range(0, args.n_batches)): # Run through the dataset
@@ -207,10 +207,10 @@ def train(args):
         # Reconstruction loss?
         # TODO add in or leave out?
         l = 0
-        if args.recon_loss_type == 'lpips':
+        if args.recon_loss_type == 'lpips' or args.recon_loss_type == 'both':
             l = lpips_loss_fn(x0.float(), gen_pred_x0).mean()
-        else:
-            l = F.mse_loss(x0.float(), gen_pred_x0) # Compare the predictions with the targets
+        if args.recon_loss_type == 'mse' or args.recon_loss_type == 'both'::
+            l += F.mse_loss(x0.float(), gen_pred_x0) # Compare the predictions with the targets
         log['recon_loss'] = l.item()
         recon_loss = args.recon_loss_scale*l
         recon_loss.backward()
