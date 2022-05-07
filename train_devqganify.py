@@ -133,11 +133,18 @@ def train(args):
         if args.wandb_project != 'None':
             wandb.log({'Reconstruction (2)':wandb.Image(im)})
     
-    # Transform lq and hq TODO use img_size from args and add other args
-    # Goal is 4x SR. If image size is 256 (hq) we take 128px from lq (which is already 1/2 res) and scale to 64px then back up to 256
-    lq_tfm = T.Compose([T.CenterCrop(args.img_size//2), T.Resize(args.img_size//4), T.Resize(args.img_size)])
-    hq_tfm = T.CenterCrop(args.img_size)
-
+    # Transform lq and hq
+    if args.sr == 4:
+        # Goal is 4x SR. If image size is 256 (hq) we take 128px from lq (which is already 1/2 res) and scale to 64px then back up to 256
+        lq_tfm = T.Compose([T.CenterCrop(args.img_size//2), T.Resize(args.img_size//4), T.Resize(args.img_size)])
+        hq_tfm = T.CenterCrop(args.img_size)
+    if args.sr == 2:
+        lq_tfm = T.Compose([T.CenterCrop(args.img_size//2), T.Resize(args.img_size)])
+        hq_tfm = T.CenterCrop(args.img_size)
+    if args.sr == 1:
+        lq_tfm = T.Compose([T.Resize(args.img_size)])
+        hq_tfm = T.Compose([T.Resize(args.img_size)])
+        
     for i in tqdm(range(0, args.n_batches)): # Run through the dataset
 
         # Get a batch
