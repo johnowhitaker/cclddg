@@ -95,7 +95,7 @@ def train(args):
     optim_dis = torch.optim.AdamW(disc.parameters(), lr=args.lr_disc, weight_decay=args.weight_decay) # Optimizer
 
     # Code for storing examples
-    def examples(n_examples = 5, z_dim=8, img_size=256):
+    def examples(n_examples = 5, z_dim=8, img_size=256, noise_to=3):
         im_out = Image.new('RGB', (img_size*n_examples, img_size*3))
         lq, hq = next(data_iter)
         lq = lq_tfm(lq[:n_examples]).to(device)*2-1
@@ -111,9 +111,9 @@ def train(args):
         batch = cloob.normalize(scale_224(lq.cuda()))
         c = cloob.image_encoder(batch).float()
 
-        # Starting from random x
-        x = torch.randn(n_examples, 4, img_size//8, img_size//8).to(device) # TODO from img_size
-        t = torch.ones((n_examples,), dtype=torch.long).to(device)*ddg_context.n_steps
+        # Starting from noised blurry im
+        t = torch.ones((n_examples,), dtype=torch.long).to(device)*noise_to
+        x, n = ddg_context.q_xt_x0(cond_0, t)
         while t[0] > 0:
             gen_input = torch.cat((x, cond_0), dim=1)
             pred_im = unet(gen_input, t, c, z)[:,:4,:,:]
@@ -125,9 +125,12 @@ def train(args):
         return im_out
 
     def log_examples():
-        im = examples(n_examples=5, z_dim=args.z_dim, img_size=args.img_size)
+        im = examples(n_examples=5, z_dim=args.z_dim, img_size=args.img_size, noise_to=4)
         if args.wandb_project != 'None':
-            wandb.log({'Reconstruction':wandb.Image(im)})
+            wandb.log({'Reconstruction (4)':wandb.Image(im)})
+        im = examples(n_examples=5, z_dim=args.z_dim, img_size=args.img_size, noise_to=2)
+        if args.wandb_project != 'None':
+            wandb.log({'Reconstruction (2)':wandb.Image(im)})
     
     # Transform lq and hq TODO use img_size from args and add other args
     # Goal is 4x SR. If image size is 256 (hq) we take 128px from lq (which is already 1/2 res) and scale to 64px then back up to 256
