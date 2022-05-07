@@ -209,7 +209,7 @@ def train(args):
         l = 0
         if args.recon_loss_type == 'lpips' or args.recon_loss_type == 'both':
             l = lpips_loss_fn(x0.float(), gen_pred_x0).mean()
-        if args.recon_loss_type == 'mse' or args.recon_loss_type == 'both'::
+        if args.recon_loss_type == 'mse' or args.recon_loss_type == 'both':
             l += F.mse_loss(x0.float(), gen_pred_x0) # Compare the predictions with the targets
         log['recon_loss'] = l.item()
         recon_loss = args.recon_loss_scale*l
