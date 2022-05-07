@@ -122,10 +122,18 @@ def train(args):
         if args.wandb_project != 'None':
             wandb.log({'Reconstruction (2)':wandb.Image(im)})
     
-    # Transform lq and hq TODO use img_size from args and add other args
-    # Goal is 4x SR. If image size is 256 (hq) we take 128px from lq (which is already 1/2 res) and scale to 64px then back up to 256
-    lq_tfm = T.Compose([T.CenterCrop(args.img_size//2), T.Resize(args.img_size//4), T.Resize(args.img_size)])
-    hq_tfm = T.CenterCrop(args.img_size)
+    # Transform lq and hq 
+    # TODO: options for using smaller or larger parts of the image (this center-crops img_size from the hq image
+    if args.sr == 4:
+        # Goal is 4x SR. If image size is 256 (hq) we take 128px from lq (which is already 1/2 res) and scale to 64px then back up to 256
+        lq_tfm = T.Compose([T.CenterCrop(args.img_size//2), T.Resize(args.img_size//4), T.Resize(args.img_size)])
+        hq_tfm = T.CenterCrop(args.img_size)
+    if args.sr == 2:
+        lq_tfm = T.Compose([T.CenterCrop(args.img_size//2), T.Resize(args.img_size)])
+        hq_tfm = T.CenterCrop(args.img_size)
+    if args.sr == 1:
+        lq_tfm = T.Compose([T.Resize(args.img_size)])
+        hq_tfm = T.Compose([T.Resize(args.img_size)])
     
     #LPIPS loss option
     lpips_loss_fn = None
@@ -257,6 +265,8 @@ parser.add_argument('--weight_decay',type=float, default=1e-6, help='weight_deca
 
 parser.add_argument('--recon_loss_scale',type=float, default=1, help='How much weight do we put on recon loss')
 parser.add_argument('--recon_loss_type',type=str, default='mse', help='What loss fn for recon loss - mse of lpips')
+
+parser.add_argument('--sr',type=int, default=4, help='SR scale factor (1, 2 or 4)')
 
 parser.add_argument('--pct_text',type=float, default=0.1, help='What percentage text vs im for cloob embed. default 0.5')
 
