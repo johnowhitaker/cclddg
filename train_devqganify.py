@@ -268,6 +268,8 @@ parser.add_argument('--recon_loss_scale',type=float, default=1, help='How much w
 
 parser.add_argument('--pct_text',type=float, default=0.1, help='What percentage text vs im for cloob embed. default 0.5')
 
+parser.add_argument('--sr',type=int, default=4, help='SR scale factor (1, 2 or 4)')
+
 args = parser.parse_args()
 print('Training args:\n')
 pp = pprint.PrettyPrinter(indent=4)
