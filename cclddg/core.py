@@ -73,7 +73,7 @@ class CLOOBEmbedding(nn.Module):
 
 # One for the gan latent, z
 class ZEmbedding(nn.Module):
-    """ Embedding to map a CLOOB embedding (`z_dim` dimensions) to n_channels via an MLP """
+    """ Embedding to map a latent z (`z_dim` dimensions) to n_channels via an MLP """
     def __init__(self, z_dim:int, n_channels: int):
         super().__init__()
         self.n_channels = n_channels

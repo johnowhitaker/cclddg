@@ -69,7 +69,7 @@ def train(args):
 
     # Set up the data
     if args.dataset == 'vqgan_pairs':
-        data = get_celebA_dl(batch_size=args.batch_size)
+        data = get_paired_vqgan(batch_size=args.batch_size)
     else:
         print('Dataset not recognized')
         return 0
@@ -97,7 +97,7 @@ def train(args):
     # Code for storing examples
     def examples(n_examples = 5, z_dim=8, img_size=256):
         im_out = Image.new('RGB', (img_size*n_examples, img_size*3))
-        lq, hq = next(dl_iter)
+        lq, hq = next(data_iter)
         lq = lq_tfm(lq[:n_examples]).to(device)*2-1
         hq = hq_tfm(hq[:n_examples]).to(device)*2-1
         for i in range(n_examples):
@@ -136,7 +136,8 @@ def train(args):
 
     for i in tqdm(range(0, args.n_batches)): # Run through the dataset
 
-        # Get a batchlq, hq = next(dl_iter)
+        # Get a batch
+        lq, hq = next(data_iter)
         lq = lq_tfm(lq).to(device)*2-1
         hq = hq_tfm(hq).to(device)*2-1
         batch_size=lq.shape[0]
