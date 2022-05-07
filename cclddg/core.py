@@ -425,12 +425,12 @@ class UNet(nn.Module):
         # Combine with the cloob & z embeddings (if applicable)
         if self.use_cloob:
             if c==None:
-                c = torch.zeros((x.shape[0], 512))
+                c = torch.zeros((x.shape[0], 512)).to(t.device)
             c = self.cloob_emb(c)
             cond = torch.cat((cond, c), dim=1)
         if self.use_z:
             if z==None:
-                z = torch.zeros((x.shape[0], self.z_emb.z_dim))
+                z = torch.zeros((x.shape[0], self.z_emb.z_dim)).to(t.device)
             z = self.z_emb(z)
             cond = torch.cat((cond, z), dim=1)
 
