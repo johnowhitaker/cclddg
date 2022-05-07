@@ -70,16 +70,16 @@ class DDG_Context():
             z = torch.randn((n_examples,z_dim), device=device)
             c = cloob.text_encoder(cloob.tokenize([p]*n_examples).to(device)).float()
             c_neg = torch.zeros((n_examples,512), device=device)
-            x = torch.randn(n_examples, 4, 16, 16).to(device)
+            x = torch.randn(n_examples, 4, img_size//8, img_size//8).to(device)
             t = torch.ones((n_examples,), dtype=torch.long).to(device)*self.n_steps
             while t[0] > 0:
                 pred_im_pos = unet(x.float(), t, c, z)
                 pred_im_neg = unet(x.float(), t, c_neg, z)
-                pred_im = pred_im_neg + (pred_im_pos-pred_im_neg)*cfg_scale.unsqueeze(-1).unsqueeze(-1).unsqueeze(-1).expand(-1, 4, 16, 16)
+                pred_im = pred_im_neg + (pred_im_pos-pred_im_neg)*cfg_scale.unsqueeze(-1).unsqueeze(-1).unsqueeze(-1).expand(-1, 4, img_size//8, img_size//8)
                 x, n = self.q_xt_x0(pred_im, t-1)
                 t -= 1
                 if t[0]==0:
                     for s in range(n_examples):
-                        im_out.paste(self.tensor_to_image(ae_model.decode(pred_im[s].unsqueeze(0))), (128*s, 128*i))
+                        im_out.paste(self.tensor_to_image(ae_model.decode(pred_im[s].unsqueeze(0))), (img_size*s, img_size*i))
 
         return im_out
