@@ -106,7 +106,8 @@ def train(args):
         x, n = ddg_context.q_xt_x0(cond_0, t)
         while t[0] > 0:
             gen_input = torch.cat((x, cond_0), dim=1)
-            pred_im = unet(gen_input, t, c, z)[:,:3,:,:]
+            with torch.no_grad():
+                pred_im = unet(gen_input, t, c, z)[:,:3,:,:]
             x, n = ddg_context.q_xt_x0(pred_im, t-1)
             t -= 1
             if t[0]==0:

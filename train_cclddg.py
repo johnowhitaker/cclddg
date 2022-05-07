@@ -141,7 +141,8 @@ def train(args):
 
         while t[0] > 0:
             tm1 = torch.tensor(t.cpu().numpy()-1, dtype=torch.long).to(device)
-            pred_im = unet(xt.float(), t, c, z)
+            with torch.no_grad():
+                pred_im = unet(xt.float(), t, c, z)
             for i in range(5):
                 ims.append(tensor_to_image(ae_model.decode(xt[i].unsqueeze(0)))) # Change to x to see noised version as in old one
             for i in range(5):
