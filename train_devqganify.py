@@ -121,7 +121,7 @@ def train(args):
             t -= 1
             if t[0]==0:
                 for s in range(n_examples):
-                    im_out.paste(ddg_context.tensor_to_image(ae_model.decode(pred_im[s].unsqueeze(0))), (img_size*s, img_size))
+                    im_out.paste(ddg_context.tensor_to_image(ae_model.decode(pred_im[s].unsqueeze(0))), (img_size*s, img_size*2))
         return im_out
 
     def log_examples():
