@@ -6,10 +6,8 @@
 # !git clone --recursive https://github.com/crowsonkb/cloob-training               &>> install.log
 # !git clone https://github.com/openai/CLIP/                                       &>> install.log
 # !pip install CLIP/.                                                              &>> install.log
-# !pip install --upgrade webdataset ipywidgets                                     &>> install.log
+# !pip install --upgrade webdataset ipywidgets lpips                               &>> install.log
 # !pip install datasets omegaconf einops wandb pytorch_lightning                   &>> install.log
-# !wget https://ommer-lab.com/files/latent-diffusion/kl-f8.zip                     &>> install.log
-# !unzip -q kl-f8.zip  
 
 # Assumes you're not in the cclddg directory so cp this to parent dir where the model above is 
 # downloaded (along with the other github repos)
@@ -36,6 +34,7 @@ import numpy as np
 import itertools
 from tqdm import tqdm
 import pprint
+import lpips
 
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -127,6 +126,11 @@ def train(args):
     # Goal is 4x SR. If image size is 256 (hq) we take 128px from lq (which is already 1/2 res) and scale to 64px then back up to 256
     lq_tfm = T.Compose([T.CenterCrop(args.img_size//2), T.Resize(args.img_size//4), T.Resize(args.img_size)])
     hq_tfm = T.CenterCrop(args.img_size)
+    
+    #LPIPS loss option
+    lpips_loss_fn = None
+    if args.recon_loss_type == 'lpips':
+        lpips_loss_fn = lpips.LPIPS(net='alex').to(device)
 
     for i in tqdm(range(0, args.n_batches)): # Run through the dataset
 
@@ -194,7 +198,11 @@ def train(args):
 
         # Reconstruction loss?
         # TODO add in or leave out?
-        l = F.mse_loss(x0.float(), gen_pred_x0) # Compare the predictions with the targets
+        l = 0
+        if args.recon_loss_type == 'lpips':
+            l = lpips_loss_fn(x0.float(), gen_pred_x0).mean()
+        else:
+            l = F.mse_loss(x0.float(), gen_pred_x0) # Compare the predictions with the targets
         log['recon_loss'] = l.item()
         recon_loss = args.recon_loss_scale*l
         recon_loss.backward()
@@ -248,6 +256,7 @@ parser.add_argument('--beta_max',type=float, default=0.9, help='variance schedul
 parser.add_argument('--weight_decay',type=float, default=1e-6, help='weight_decay')
 
 parser.add_argument('--recon_loss_scale',type=float, default=1, help='How much weight do we put on recon loss')
+parser.add_argument('--recon_loss_type',type=str, default='mse', help='What loss fn for recon loss - mse of lpips')
 
 parser.add_argument('--pct_text',type=float, default=0.1, help='What percentage text vs im for cloob embed. default 0.5')
 

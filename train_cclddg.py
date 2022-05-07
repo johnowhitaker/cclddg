@@ -6,7 +6,7 @@
 # !git clone --recursive https://github.com/crowsonkb/cloob-training               &>> install.log
 # !git clone https://github.com/openai/CLIP/                                       &>> install.log
 # !pip install CLIP/.                                                              &>> install.log
-# !pip install --upgrade webdataset ipywidgets                                     &>> install.log
+# !pip install --upgrade webdataset ipywidgets lpips                               &>> install.log
 # !pip install datasets omegaconf einops wandb pytorch_lightning                   &>> install.log
 # !wget https://ommer-lab.com/files/latent-diffusion/kl-f8.zip                     &>> install.log
 # !unzip -q kl-f8.zip  
