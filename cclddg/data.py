@@ -14,6 +14,7 @@ from torchvision import transforms as T
 from torch.utils.data import Dataset, DataLoader
 
 class CelebADataset(Dataset):
+    """One option: custom Dataset class"""
     def __init__(self, img_size=128):
         self.dataset = load_dataset('huggan/CelebA-faces')['train']
         self.preprocess = T.Compose([T.ToTensor(),T.Resize(img_size), T.CenterCrop(img_size)])

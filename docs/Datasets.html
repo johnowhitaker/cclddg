@@ -29,6 +29,13 @@ nb_path: "02_Datasets.ipynb"
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="CelebA">CelebA<a class="anchor-link" href="#CelebA"> </a></h3><p>Celebrity faces. A useful test dataset since they're roughly aligned and thus easier to generate.</p>
+
+</div>
+</div>
+</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -73,17 +80,7 @@ nb_path: "02_Datasets.ipynb"
 <div class="output_markdown rendered_html output_subarea ">
 <h2 id="CelebADataset" class="doc_header"><code>class</code> <code>CelebADataset</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/data.py#L16" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>CelebADataset</code>(<strong>*<code>args</code></strong>, <strong>**<code>kwds</code></strong>) :: <code>Dataset</code></p>
 </blockquote>
-<p>An abstract class representing a :class:<code>Dataset</code>.</p>
-<p>All datasets that represent a map from keys to data samples should subclass
-it. All subclasses should overwrite :meth:<code>__getitem__</code>, supporting fetching a
-data sample for a given key. Subclasses could also optionally overwrite
-:meth:<code>__len__</code>, which is expected to return the size of the dataset by many
-:class:<code>~torch.utils.data.Sampler</code> implementations and the default options
-of :class:<code>~torch.utils.data.DataLoader</code>.</p>
-<p>.. note::
-  :class:<code>~torch.utils.data.DataLoader</code> by default constructs a index
-  sampler that yields integral indices.  To make it work with a map-style
-  dataset with non-integral indices/keys, a custom sampler must be provided.</p>
+<p>One option: custom Dataset class</p>
 
 </div>
 
@@ -106,7 +103,7 @@ of :class:<code>~torch.utils.data.DataLoader</code>.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="get_celebA_dl" class="doc_header"><code>get_celebA_dl</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/data.py#L26" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>get_celebA_dl</code>(<strong><code>img_size</code></strong>=<em><code>128</code></em>, <strong><code>batch_size</code></strong>=<em><code>32</code></em>)</p>
+<h4 id="get_celebA_dl" class="doc_header"><code>get_celebA_dl</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/data.py#L27" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>get_celebA_dl</code>(<strong><code>img_size</code></strong>=<em><code>128</code></em>, <strong><code>batch_size</code></strong>=<em><code>32</code></em>)</p>
 </blockquote>
 
 </div>
@@ -126,6 +123,13 @@ of :class:<code>~torch.utils.data.DataLoader</code>.</p>
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>And in action:</p>
+
+</div>
+</div>
+</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -172,6 +176,13 @@ Reusing dataset parquet (/root/.cache/huggingface/datasets/parquet/huggan--Celeb
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Conceptual-Captions-12M">Conceptual Captions 12M<a class="anchor-link" href="#Conceptual-Captions-12M"> </a></h3><p>These actually have text associated with the images. Useful for text-to-image testing and so on. I've been meaning to do LAION as well but for now this works.</p>
+
+</div>
+</div>
+</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -183,7 +194,7 @@ Reusing dataset parquet (/root/.cache/huggingface/datasets/parquet/huggan--Celeb
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="get_cc12m_dl" class="doc_header"><code>get_cc12m_dl</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/data.py#L34" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>get_cc12m_dl</code>(<strong><code>img_size</code></strong>=<em><code>128</code></em>, <strong><code>batch_size</code></strong>=<em><code>32</code></em>, <strong><code>url</code></strong>=<em><code>None</code></em>, <strong><code>num_workers</code></strong>=<em><code>8</code></em>)</p>
+<h4 id="get_cc12m_dl" class="doc_header"><code>get_cc12m_dl</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/data.py#L35" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>get_cc12m_dl</code>(<strong><code>img_size</code></strong>=<em><code>128</code></em>, <strong><code>batch_size</code></strong>=<em><code>32</code></em>, <strong><code>url</code></strong>=<em><code>None</code></em>, <strong><code>num_workers</code></strong>=<em><code>8</code></em>)</p>
 </blockquote>
 
 </div>
@@ -242,7 +253,13 @@ Reusing dataset parquet (/root/.cache/huggingface/datasets/parquet/huggan--Celeb
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>I also tried an image repair task, that requires a low quality image and a high quality version:</p>
+<h3 id="Paired-VQGAN-reconstructions">Paired VQGAN reconstructions<a class="anchor-link" href="#Paired-VQGAN-reconstructions"> </a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>I also tried an image repair task, that requires a low quality image and a high quality version. The 'Low quality version' is a 256px image that has been encoded then decoded with VQGAN. The target is the 512px reference image.</p>
 
 </div>
 </div>
@@ -258,7 +275,7 @@ Reusing dataset parquet (/root/.cache/huggingface/datasets/parquet/huggan--Celeb
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="get_paired_vqgan" class="doc_header"><code>get_paired_vqgan</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/data.py#L50" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>get_paired_vqgan</code>(<strong><code>batch_size</code></strong>=<em><code>32</code></em>)</p>
+<h4 id="get_paired_vqgan" class="doc_header"><code>get_paired_vqgan</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/data.py#L51" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>get_paired_vqgan</code>(<strong><code>batch_size</code></strong>=<em><code>32</code></em>)</p>
 </blockquote>
 
 </div>
