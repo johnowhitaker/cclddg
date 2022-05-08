@@ -20,7 +20,7 @@ sys.path.append('./latent-diffusion')
 sys.path.append('./cloob-training')
 from cclddg.core import UNet, Discriminator
 from cclddg.ddg_context import DDG_Context
-from cclddg.data import get_celebA_dl, get_cc12m_dl, tensor_to_image
+from cclddg.data import get_celebA_dl, get_cc12m_dl, get_imagewoof_dl, tensor_to_image
 from cloob_training import model_pt, pretrained
 import ldm.models.autoencoder
 from omegaconf import OmegaConf
@@ -70,6 +70,8 @@ def train(args):
     # Set up the data
     if args.dataset == 'celebA':
         data = get_celebA_dl(batch_size=args.batch_size, img_size=args.img_size)
+    elif args.dataset == 'imagewoof': # TODO accept URL in case of local training
+        data = get_imagewoof_dl(batch_size=args.batch_size, img_size=args.img_size)
     elif args.dataset == 'cc12m': # TODO accept URL in case of local training
         data = get_cc12m_dl(batch_size=args.batch_size, img_size=args.img_size)
     else:
