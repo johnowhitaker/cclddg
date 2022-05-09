@@ -83,8 +83,10 @@ def train(args):
     # Create the model
     unet = UNet(image_channels=4, n_channels=args.n_channels_unet,
                z_dim=args.z_dim, n_z_channels=args.n_z_channels,
+                ch_mults=args.ch_mults, is_attn = args.is_attn
                ).to(device) # 4 or 8 or whatever based on ae
-    disc = Discriminator(image_channels=4*2, n_channels=args.n_channels_disc).to(device) # image_channels=4 but expects 8 since we condition on xt
+    disc = Discriminator(image_channels=4*2, n_channels=args.n_channels_disc,
+                        ch_mults=args.ch_mults_disc, is_attn = args.is_attn_disc).to(device) # image_channels=4 but expects 8 since we condition on xt
 
     # Set up the DDG context
     ddg_context = DDG_Context(n_steps=args.n_steps, beta_min=args.beta_min, 
@@ -299,6 +301,12 @@ parser.add_argument('--n_cloob_channels_unet',type=int, default=256, help='n_clo
 parser.add_argument('--n_cloob_channels_disc',type=int, default=256, help='n_cloob_channels for disc')
 parser.add_argument('--n_time_channels',type=int, default=-1, help='time emb (-1 for n_channels*4)')
 parser.add_argument('--denom_factor',type=int, default=16, help='for time emb. low default of 16.')
+
+# TODO help for these
+parser.add_argument('--ch_mults', nargs='+', type=int, default=(1, 2, 2, 4))
+parser.add_argument('--is_attn', nargs='+', type=int, default=(0, 0, 1, 1))
+parser.add_argument('--ch_mults_disc', nargs='+', type=int, default=(1, 2, 2, 4))
+parser.add_argument('--is_attn_disc', nargs='+', type=int, default=(0, 0, 1, 1))
 
 parser.add_argument('--n_steps',type=int, default=5, help='How many steps')
 parser.add_argument('--beta_min',type=float, default=0.3, help='variance schedule')
