@@ -35,6 +35,7 @@ from torchvision.utils import make_grid
 import numpy as np
 import itertools
 from tqdm import tqdm
+import os
 import pprint
 
 
@@ -99,28 +100,46 @@ def train(args):
     optim_dis = torch.optim.AdamW(disc.parameters(), lr=args.lr_disc, weight_decay=args.weight_decay) # Optimizer
 
     # Code for storing examples
-    def log_examples():
-        if args.dataset == 'celebA':
-            im = ddg_context.examples(ae_model, unet, cloob, n_examples=7, 
-                             prompts=['A male face', 'a female face', 'a mugshot',
-                                     'A photo of a face', 'A man with a beard'],
-                             img_size = args.img_size, z_dim=args.z_dim)
-        else:
-            im = ddg_context.examples(ae_model, unet, cloob, n_examples=7, 
-                             prompts=['A picture of a female face',
-                                      'A watercolor painting of an underwater submarine',
-                                      'A red STOP sign',
-                                      'A landscape photo of green hills beneath a clear blue sky',
-                                      'A group of people stand together chatting',
-                                      'An armchair that is shaped like an avocado, product photo comfy avo chair',
-                                      'Blue ocean waves'
-                                     ],
-                             img_size = args.img_size, z_dim=args.z_dim)
-        
-        if args.wandb_project != 'None':
-            wandb.log({'Examples':wandb.Image(im)})
-        else:
-            im.save('example.jpg')
+    def log_examples(prompts_file=''):
+        if prompts_file == '':
+            if args.dataset == 'celebA':
+                im = ddg_context.examples(ae_model, unet, cloob, n_examples=args.n_examples, 
+                                          cfg_scale_min=args.cfg_min, cfg_scale_max=args.cfg_max,
+                                 prompts=['A male face', 'a female face', 'a mugshot',
+                                         'A photo of a face', 'A man with a beard'],
+                                 img_size = args.img_size, z_dim=args.z_dim)
+            else:
+                im = ddg_context.examples(ae_model, unet, cloob, n_examples=args.n_examples,
+                                          cfg_scale_min=args.cfg_min, cfg_scale_max=args.cfg_max,
+                                 prompts=['A picture of a female face',
+                                          'A watercolor painting of an underwater submarine',
+                                          'A red STOP sign',
+                                          'A landscape photo of green hills beneath a clear blue sky',
+                                          'A group of people stand together chatting',
+                                          'An armchair that is shaped like an avocado, product photo comfy avo chair',
+                                          'Blue ocean waves'
+                                         ],
+                                 img_size = args.img_size, z_dim=args.z_dim)
+
+            if args.wandb_project != 'None':
+                wandb.log({'Examples':wandb.Image(im)})
+            else:
+                im.save('example.jpg')
+                
+        else: # We have a prompts file
+            if args.wandb_project != 'None':
+                with open(prompts_file, 'r') as pf:
+                    prompts = pf.readlines()
+                    table_data = []
+                    for p in prompts:
+                        eg_im = ddg_context.examples(ae_model, unet, cloob, n_examples=args.n_examples, 
+                                                     cfg_scale_min=args.cfg_min, cfg_scale_max=args.cfg_max,
+                                     prompts=[p], img_size = args.img_size, z_dim=args.z_dim) #
+                        table_data.append([p, wandb.Image(eg_im)])
+                    columns=['Prompt', f'Examples (cfg_scale from {args.cfg_min} to {args.cfg_max})'] # Rendered images as 'Image'
+                    table = wandb.Table(columns=columns, data=table_data)
+                    wandb.log({'Examples':table})
+                    
 
     def log_reconstruction():
         # Get a batch of images and captions
@@ -246,7 +265,7 @@ def train(args):
 
         # Occasionally log demo images
         if (len(losses))%args.log_images_every==0:
-            log_examples()
+            log_examples(args.prompts_file)
             log_reconstruction()
             
         # Occasionally save models
@@ -292,6 +311,13 @@ parser.add_argument('--recon_loss_scale',type=float, default=1, help='How much w
 parser.add_argument('--pct_text',type=float, default=0.1, help='What percentage text vs im for cloob embed. default 0.1')
 
 parser.add_argument('--pct_zeros',type=float, default=0.1, help='What percentage should we zero out CLOOB embeddings for CGF, default 0.1 (10%)')
+
+parser.add_argument('--prompts_file', type=str, default='', help='Prompts (one per line)')
+
+parser.add_argument('--cfg_min',type=float, default=0, help='min CFG scale for example ims (default 0)')
+parser.add_argument('--cfg_max',type=float, default=2, help='max CFG scale for example ims (default 2)')
+parser.add_argument('--n_examples',type=float, default=7, help='examples_per_prompt')
+
 
 args = parser.parse_args()
 print('Training args:\n')
