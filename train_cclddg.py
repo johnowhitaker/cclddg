@@ -124,7 +124,7 @@ def train(args):
 
     def log_reconstruction():
         # Get a batch of images and captions
-        images, texts = next(data_iter)
+        images, texts = next(iter(data))
         images = images.cuda()*2-1
         batch_size=images.shape[0]
         x0 = ae_model.encode(images).mode() # To latents (might want resize)
@@ -161,7 +161,12 @@ def train(args):
     for i in tqdm(range(0, args.n_batches)): # Run through the dataset
 
         # Get a batch of images and captions
-        images, texts = next(data_iter)
+        try:
+            images, texts = next(data_iter)
+        except StopIteration:
+            data_iter = iter(data) # Restart 
+            images, texts = next(data_iter)
+            
         images = images.cuda()*2-1
         batch_size=images.shape[0]
 
@@ -176,16 +181,18 @@ def train(args):
         z = torch.randn((batch_size,args.z_dim), device=device) # It's a gan now yay
         
         # Get cloob embeddings TODO check if pct_text is 0 or 1 to save time
-        with torch.no_grad():
-            batch = cloob.normalize(scale_224(images.cuda()))
-            cloob_embeds_images = cloob.image_encoder(batch).float()
-            cloob_embeds_texts =  cloob.text_encoder(cloob.tokenize(texts, truncate=True).to(device)).float()
-            mask = (torch.cuda.FloatTensor(batch_size, 1).uniform_() < args.pct_text).float().expand(-1, 512)
-            c = mask*cloob_embeds_texts + (1-mask)*cloob_embeds_images
-        #c =  torch.zeros((batch_size,512), device=device) # if not using cloob TODO check
+        if use_cloob_unet or use_cloob_disc:
+            with torch.no_grad():
+                batch = cloob.normalize(scale_224(images.cuda()))
+                cloob_embeds_images = cloob.image_encoder(batch).float()
+                cloob_embeds_texts =  cloob.text_encoder(cloob.tokenize(texts, truncate=True).to(device)).float()
+                mask = (torch.cuda.FloatTensor(batch_size, 1).uniform_() < args.pct_text).float().expand(-1, 512)
+                c = mask*cloob_embeds_texts + (1-mask)*cloob_embeds_images
+        else:
+            c =  torch.zeros((batch_size,512), device=device) # if not using cloob
         
-        # zero out 10%:
-        zero_mask = (torch.cuda.FloatTensor(batch_size, 1).uniform_() < 0.9).float().expand(-1, 512)
+        # zero out 10%: TODO set with arg
+        zero_mask = (torch.cuda.FloatTensor(batch_size, 1).uniform_() < 1-args.pct_zeros).float().expand(-1, 512)
         c = c*zero_mask
 
         # Get the noised images (xt) and the noise (our target) plus the x(t-1)
@@ -210,6 +217,7 @@ def train(args):
         disc_loss_fake.backward()
         log['disc_loss_fake'] = disc_loss_fake.item()
         log['D(fake).mean()'] = disc_pred_fake.mean().item()
+        log['disc_loss_sum'] = disc_loss_fake.item() +  disc_loss_real.item()
         optim_dis.step() # Update the discriminator 
         disc.zero_grad() # Zero out grads again (can also put in eval mode)
 
@@ -219,16 +227,16 @@ def train(args):
         label.fill_(1)  # fake labels are real for generator cost
         disc_pred_fake_G = disc(torch.cat((xt, gen_pred_noised_to_xtm1), dim=1), t, c)
         disc_loss_fake_G = criterion(disc_pred_fake_G, label)
-        disc_loss_fake_G.backward(retain_graph=True) # We also want to update based on recon loss
+        disc_loss_fake_G.backward(retain_graph=True) # We may also want to update based on recon loss
         log['disc_loss_fake_G'] = disc_loss_fake_G.item()
         log['D(fake).mean() G'] = disc_pred_fake_G.mean().item()
 
-        # Reconstruction loss?
-        # TODO add in or leave out?
+        # Reconstruction loss. Set recon_loss_scale=0 to skip (will still be recorded)
         l = F.mse_loss(x0.float(), gen_pred_x0) # Compare the predictions with the targets
         log['recon_loss'] = l.item()
-        recon_loss = args.recon_loss_scale*l
-        recon_loss.backward()
+        if args.recon_loss_scale > 0:
+            recon_loss = args.recon_loss_scale*l
+            recon_loss.backward()
 
         optim_gen.step() # Update the discriminator 
 
@@ -281,7 +289,9 @@ parser.add_argument('--weight_decay',type=float, default=1e-6, help='weight_deca
 
 parser.add_argument('--recon_loss_scale',type=float, default=1, help='How much weight do we put on recon loss')
 
-parser.add_argument('--pct_text',type=float, default=0.1, help='What percentage text vs im for cloob embed. default 0.5')
+parser.add_argument('--pct_text',type=float, default=0.1, help='What percentage text vs im for cloob embed. default 0.1')
+
+parser.add_argument('--pct_zeros',type=float, default=0.1, help='What percentage should we zero out CLOOB embeddings for CGF, default 0.1 (10%)')
 
 args = parser.parse_args()
 print('Training args:\n')
