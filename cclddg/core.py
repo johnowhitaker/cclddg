@@ -313,6 +313,8 @@ class UNet(nn.Module):
     """
     #### U-Net
 
+    Hopefully flexible enough :) Arguments:
+
         * `image_channels` is the number of channels in the image. $3$ for RGB.
         * `n_channels` is number of channels in the initial feature map that we transform the image into
         * `ch_mults` is the list of channel numbers at each resolution. The number of channels is `ch_mults[i] * n_channels`
@@ -468,9 +470,9 @@ class UNet(nn.Module):
 class Discriminator(nn.Module):
     """
 
-    Discriminator
+    #### Discriminator
 
-    Based on the same architecture as the UNet, but without the upwards half.
+    Based on the same architecture as the UNet, but without the upwards half. Arguments:
 
         * `image_channels` is the number of channels in the image. $3$ for RGB.
         * `n_channels` is number of channels in the initial feature map that we transform the image into

@@ -42,7 +42,7 @@ nb_path: "01_DDG_Context.ipynb"
 <div class="output_markdown rendered_html output_subarea ">
 <h2 id="DDG_Context" class="doc_header"><code>class</code> <code>DDG_Context</code><a href="https://github.com/johnowhitaker/cclddg/tree/master/cclddg/ddg_context.py#L10" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>DDG_Context</code>(<strong><code>n_steps</code></strong>=<em><code>5</code></em>, <strong><code>beta_min</code></strong>=<em><code>0.3</code></em>, <strong><code>beta_max</code></strong>=<em><code>0.9</code></em>, <strong><code>device</code></strong>=<em><code>'cpu'</code></em>)</p>
 </blockquote>
-<p>TODO docstring</p>
+<p>Keep track of the numbre of steps, variance schedule etc. And provide a few utility functions.</p>
 
 </div>
 
@@ -61,6 +61,120 @@ nb_path: "01_DDG_Context.ipynb"
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Included functions:</p>
+
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h4 id="DDG_Context.q_xt_xtminus1" class="doc_header"><code>DDG_Context.q_xt_xtminus1</code><a href="__main__.py#L19" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>DDG_Context.q_xt_xtminus1</code>(<strong><code>xtm1</code></strong>, <strong><code>t</code></strong>)</p>
+</blockquote>
+<p>A single noising step.</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h4 id="DDG_Context.q_xt_x0" class="doc_header"><code>DDG_Context.q_xt_x0</code><a href="__main__.py#L26" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>DDG_Context.q_xt_x0</code>(<strong><code>x0</code></strong>, <strong><code>t</code></strong>)</p>
+</blockquote>
+<p>Jump to a given step.</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h4 id="DDG_Context.p_xt" class="doc_header"><code>DDG_Context.p_xt</code><a href="__main__.py#L33" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>DDG_Context.p_xt</code>(<strong><code>xt</code></strong>, <strong><code>noise</code></strong>, <strong><code>t</code></strong>)</p>
+</blockquote>
+<p>The reverse step, not used in DDG but included for vanilla diffusion tests.</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h4 id="DDG_Context.examples" class="doc_header"><code>DDG_Context.examples</code><a href="__main__.py#L47" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>DDG_Context.examples</code>(<strong><code>ae_model</code></strong>, <strong><code>unet</code></strong>, <strong><code>cloob</code></strong>, <strong><code>n_examples</code></strong>=<em><code>12</code></em>, <strong><code>cfg_scale_min</code></strong>=<em><code>0</code></em>, <strong><code>cfg_scale_max</code></strong>=<em><code>4</code></em>, <strong><code>prompts</code></strong>=<em><code>['A photograph portrait of a man with a beard, a human face', 'Green hills and grass beneath a blue sky', 'A watercolor painting of an underwater submarine', 'A car, a photo of a red car', 'An armchair in the shape of an avocado', 'blue ocean waves', 'A red stop sign']</code></em>, <strong><code>img_size</code></strong>=<em><code>128</code></em>, <strong><code>z_dim</code></strong>=<em><code>8</code></em>)</p>
+</blockquote>
+<p>Given ae_model, a u_net and cloob, produce some example images with CFG.</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>In action:</p>
+
+</div>
+</div>
+</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">

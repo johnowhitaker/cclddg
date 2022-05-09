@@ -8,7 +8,7 @@ from PIL import Image
 import numpy as np
 
 class DDG_Context():
-    """TODO docstring"""
+    """Keep track of the numbre of steps, variance schedule etc. And provide a few utility functions."""
     def __init__(self, n_steps=5, beta_min=0.3, beta_max=0.9, device='cpu'):
         self.n_steps = n_steps
         self.beta = torch.linspace(beta_min, beta_max, n_steps).to(device)
@@ -21,21 +21,21 @@ class DDG_Context():
         return c.reshape(-1, 1, 1, 1)
 
     def q_xt_xtminus1(self, xtm1, t):
-        """A single noising step:"""
+        """A single noising step. """
         mean = self.gather(1. - self.beta, t) ** 0.5 * xtm1 # √(1−βt)*xtm1
         var = self.gather(self.beta, t) # βt I
         eps = torch.randn_like(xtm1) # Noise shaped like xtm1
         return mean + (var ** 0.5) * eps, eps
 
     def q_xt_x0(self, x0, t):
-        """Jump to a given step"""
+        """Jump to a given step."""
         mean = self.gather(self.alpha_bar, t) ** 0.5 * x0 # now alpha_bar
         var = 1-self.gather(self.alpha_bar, t) # (1-alpha_bar)
         eps = torch.randn_like(x0)
         return mean + (var ** 0.5) * eps, eps
 
     def p_xt(self, xt, noise, t):
-        """The reverse step, not used in DDG"""
+        """The reverse step, not used in DDG but included for vanilla diffusion tests."""
         alpha_t = self.gather(self.alpha, t)
         alpha_bar_t = self.gather(self.alpha_bar, t)
         eps_coef = (1 - alpha_t) / (1 - alpha_bar_t) ** .5
