@@ -33,7 +33,7 @@ W&B runs TODO
 
 The train script is written to run OUTSIDE this directory (aka NOT in cclddg). It also assumes the locations of various dependancies and model files. To set it up, in a notebook run:
 
-```python
+```
 # !git clone https://github.com/johnowhitaker/cclddg                               &>> install.log
 # !git clone https://github.com/CompVis/latent-diffusion                           &>> install.log
 # !git clone https://github.com/CompVis/taming-transformers                        &>> install.log

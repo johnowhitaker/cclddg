@@ -48,7 +48,7 @@ class DDG_Context():
       return Image.fromarray(np.array(((t.detach().cpu().squeeze().permute(1, 2, 0)+1)/2).clip(0, 1)*255).astype(np.uint8))
 
     # Examples with some propmts
-    def examples(self, ae_model, unet, cloob, n_examples=12, cfg_scale_max=4,
+    def examples(self, ae_model, unet, cloob, n_examples=12, cfg_scale_min=0, cfg_scale_max=4,
              prompts = [
                 'A photograph portrait of a man with a beard, a human face',
                 'Green hills and grass beneath a blue sky',
@@ -62,7 +62,7 @@ class DDG_Context():
         """Given ae_model, a u_net and cloob, produce some example images with CFG."""
 
         device = ae_model.device
-        cfg_scale = torch.linspace(0, cfg_scale_max, n_examples).to(device)
+        cfg_scale = torch.linspace(cfg_scale_min, cfg_scale_max, n_examples).to(device)
 
         im_out = Image.new('RGB', (img_size*n_examples, img_size*len(prompts)))
 
