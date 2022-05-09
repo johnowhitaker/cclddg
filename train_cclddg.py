@@ -181,7 +181,7 @@ def train(args):
         z = torch.randn((batch_size,args.z_dim), device=device) # It's a gan now yay
         
         # Get cloob embeddings TODO check if pct_text is 0 or 1 to save time
-        if use_cloob_unet or use_cloob_disc:
+        if args.use_cloob_unet or args.use_cloob_disc:
             with torch.no_grad():
                 batch = cloob.normalize(scale_224(images.cuda()))
                 cloob_embeds_images = cloob.image_encoder(batch).float()
