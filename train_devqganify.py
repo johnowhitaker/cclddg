@@ -78,8 +78,10 @@ def train(args):
     # Create the model
     unet = UNet(image_channels=4*2, n_channels=args.n_channels_unet,
                z_dim=args.z_dim, n_z_channels=args.n_z_channels,
+                ch_mults=args.ch_mults, is_attn = args.is_attn,
                ).to(device) # 4 or 8 or whatever based on ae
-    disc = Discriminator(image_channels=4*3, n_channels=args.n_channels_disc).to(device) # image_channels=4 but expects 8 since we condition on xt
+    disc = Discriminator(image_channels=4*3, n_channels=args.n_channels_disc,
+                        ch_mults=args.ch_mults_disc, is_attn = args.is_attn_disc).to(device) # image_channels=4 but expects 8 since we condition on xt
 
     # Set up the DDG context
     ddg_context = DDG_Context(n_steps=args.n_steps, beta_min=args.beta_min, 
@@ -176,15 +178,25 @@ def train(args):
         # Get the noised images (xt) and the noise (our target) plus the x(t-1)
         xtm1, eps_t = ddg_context.q_xt_x0(x0, t-1) # Most of the noise
         xt, eps_added = ddg_context.q_xt_xtminus1(xtm1, t) # One extra step
+        xt.requires_grad = True # Only needed if doing R1 reg
 
         # Disc loss on the 'real' samples
         disc_input = torch.cat((xt, xtm1, cond_0), dim=1)
         disc_pred_real = disc(disc_input, t, c) # Predict for xtm1 conditioned on xt
         label = torch.ones_like(disc_pred_real) 
         disc_loss_real = criterion(disc_pred_real, label)
-        disc_loss_real.backward()
+        disc_loss_real.backward(retain_graph=True) # Only needed if doing R1 reg
+        # disc_loss_real.backward()
         log['disc_loss_real'] = disc_loss_real.item()
         log['D(real).mean()'] = disc_pred_real.mean().item()
+        
+        # R1 regularization term
+        # NB This bit I copied from nvlabs code, first time I've used that even as ref. Not sure how this affects licence. 
+        r1_gamma=1 # TODO arg
+        grad_real = torch.autograd.grad(outputs=disc_pred_real.sum(), inputs=xt, create_graph=True)[0]
+        grad_penalty = (grad_real.view(grad_real.size(0), -1).norm(2, dim=1) ** 2).mean()
+        grad_penalty = r1_gamma / 2 * grad_penalty
+        grad_penalty.backward()
 
         # Disc on a fake batch
         gen_input = torch.cat((xt, cond_0), dim=1) # We use the lq image as conditioning
@@ -196,6 +208,7 @@ def train(args):
         disc_loss_fake.backward()
         log['disc_loss_fake'] = disc_loss_fake.item()
         log['D(fake).mean()'] = disc_pred_fake.mean().item()
+        log['disc_loss_sum'] = disc_loss_fake.item() +  disc_loss_real.item()
         optim_dis.step() # Update the discriminator 
         disc.zero_grad() # Zero out grads again (can also put in eval mode)
 
@@ -257,6 +270,12 @@ parser.add_argument('--n_cloob_channels_unet',type=int, default=256, help='n_clo
 parser.add_argument('--n_cloob_channels_disc',type=int, default=256, help='n_cloob_channels for disc')
 parser.add_argument('--n_time_channels',type=int, default=-1, help='time emb (-1 for n_channels*4)')
 parser.add_argument('--denom_factor',type=int, default=16, help='for time emb. low default of 16.')
+
+# TODO help for these
+parser.add_argument('--ch_mults', nargs='+', type=int, default=(1, 2, 2, 4))
+parser.add_argument('--is_attn', nargs='+', type=int, default=(0, 0, 1, 1))
+parser.add_argument('--ch_mults_disc', nargs='+', type=int, default=(1, 2, 2, 4))
+parser.add_argument('--is_attn_disc', nargs='+', type=int, default=(0, 0, 1, 1))
 
 parser.add_argument('--n_steps',type=int, default=5, help='How many steps')
 parser.add_argument('--beta_min',type=float, default=0.3, help='variance schedule')
