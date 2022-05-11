@@ -219,15 +219,24 @@ def train(args):
         # Get the noised images (xt) and the noise (our target) plus the x(t-1)
         xtm1, eps_t = ddg_context.q_xt_x0(x0, t-1) # Most of the noise
         xt, eps_added = ddg_context.q_xt_xtminus1(xtm1, t) # One extra step
+        xt.requires_grad = True # Only needed if doing R1 reg
 
         # Disc loss on the 'real' samples
         disc_input = torch.cat((xt, xtm1), dim=1)
         disc_pred_real = disc(disc_input, t, c) # Predict for xtm1 conditioned on xt
         label = torch.ones_like(disc_pred_real) 
         disc_loss_real = criterion(disc_pred_real, label)
-        disc_loss_real.backward()
+        disc_loss_real.backward(retain_graph=True) # Only needed if doing R1 reg
         log['disc_loss_real'] = disc_loss_real.item()
         log['D(real).mean()'] = disc_pred_real.mean().item()
+        
+        # R1 regularization term
+        # NB This bit I copied from nvlabs code, first time I've used that even as ref. Not sure how this affects licence. 
+        r1_gamma=1 # TODO arg
+        grad_real = torch.autograd.grad(outputs=disc_pred_real.sum(), inputs=xt, create_graph=True)[0]
+        grad_penalty = (grad_real.view(grad_real.size(0), -1).norm(2, dim=1) ** 2).mean()
+        grad_penalty = r1_gamma / 2 * grad_penalty
+        grad_penalty.backward()
 
         # Disc on a fake batch
         gen_pred_x0 = unet(xt.float(), t, c, z) # Run xt through the network to get its predictions
