@@ -1,8 +1,0 @@
-{
-  "cclddg": {
-    "Overview": "/",
-    "CCLDDG Core Class": "core.html",
-    "Denoising Diffusion GAN Context": "DDG_Context.html",
-    "Dataset Management": "Datasets.html"
-  }
-}
