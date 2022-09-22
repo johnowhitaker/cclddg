@@ -1,0 +1,9 @@
+project:
+  output-dir: _docs
+
+website:
+  title: "cclddg"
+  site-url: "https://johnowhitaker.github.io/cclddg/"
+  description: "CLOOB Conditioned Latent Denoising Diffusion GAN"
+  repo-branch: master
+  repo-url: "https://github.com/johnowhitaker/cclddg/tree/master/"
