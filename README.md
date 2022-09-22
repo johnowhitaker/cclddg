@@ -1,6 +1,7 @@
 # CLOOB Conditioned Latent Denoising Diffusion GAN
 > My code and utilities for training CCLDDGs.
 
+code for https://datasciencecastnet.home.blog/2022/04/12/fine-tuning-a-cloob-conditioned-latent-diffusion-model-on-wikiart/ (now abandoned)
 
 This is very much a work in progress. Stay tuned for better info soon :)
 
