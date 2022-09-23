@@ -7,8 +7,6 @@ CLOOB Conditioned Latent Denoising Diffusion GAN
 
 [![](https://github.com/johnowhitaker/cclddg/actions/workflows/test.yaml/badge.svg)](https://github.com/johnowhitaker/cclddg/actions/workflows/test.yaml)
 
-CI
-
 </div>
 
 This is very much a work in progress. Stay tuned for better info soon :)
