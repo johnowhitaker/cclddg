@@ -1,0 +1,93 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "CLOOB Conditioned Latent Denoising Diffusion GAN",
+    "section": "",
+    "text": "This is very much a work in progress. Stay tuned for better info soon :)\nIn the meantime, the core ideas:\nI tried training for a few hours on CC12M and while the results aren’t photorealistic you can definitely see something of a prompt in the outputs - ‘blue ocean waves’ is mostly blue, for eg. Results from a longer trainging run soon."
+  },
+  {
+    "objectID": "index.html#install",
+    "href": "index.html#install",
+    "title": "CLOOB Conditioned Latent Denoising Diffusion GAN",
+    "section": "Install",
+    "text": "Install\nI might turn this into a package later, for now your best bet is to check out the colab(s) below or follow the instructions in ‘Running the training script’."
+  },
+  {
+    "objectID": "index.html#what-is-all-this",
+    "href": "index.html#what-is-all-this",
+    "title": "CLOOB Conditioned Latent Denoising Diffusion GAN",
+    "section": "What is all this",
+    "text": "What is all this\nThe main thing this code does is define a UNet architecture and an accompanying Discriminator architecture that can take in an image (or a latent representation of one) along with conditioning information (what timestep we’re looking at, a CLOOB embedding of an image or caption) and a latent variable z used to turn the unet into a more GAN-like multimodal generator thingee.\nDemos - A standard diffusion model TODO - A standard latent diffusion model TODO - A standard Defusion Denoising GAN TODO - CLOOB-Conditioned Latent Defusion Denoising GAN: https://colab.research.google.com/drive/1T5LommNOw4cVr8bX6AO5QXJ7D1LyXz2m?usp=sharing (faces)\nW&B runs TODO"
+  },
+  {
+    "objectID": "index.html#diffusion-models",
+    "href": "index.html#diffusion-models",
+    "title": "CLOOB Conditioned Latent Denoising Diffusion GAN",
+    "section": "Diffusion models",
+    "text": "Diffusion models\nLink DDPM paper\nImage\nDemo using this code"
+  },
+  {
+    "objectID": "index.html#denoising-diffusion-gans",
+    "href": "index.html#denoising-diffusion-gans",
+    "title": "CLOOB Conditioned Latent Denoising Diffusion GAN",
+    "section": "Denoising Diffusion GANs",
+    "text": "Denoising Diffusion GANs\nLink paper\nDiagram\nExplanation\nHow this differs from paper (read paper)\nDemo using this code"
+  },
+  {
+    "objectID": "index.html#latent-diffusion",
+    "href": "index.html#latent-diffusion",
+    "title": "CLOOB Conditioned Latent Denoising Diffusion GAN",
+    "section": "Latent Diffusion",
+    "text": "Latent Diffusion\nExplain AE\nLatent DDG demo"
+  },
+  {
+    "objectID": "index.html#cloob-conditioning",
+    "href": "index.html#cloob-conditioning",
+    "title": "CLOOB Conditioned Latent Denoising Diffusion GAN",
+    "section": "CLOOB Conditioning",
+    "text": "CLOOB Conditioning\nExplain\nDemo\nExamples of text-to-image capacity trained on just images"
+  },
+  {
+    "objectID": "CONTRIBUTING.html",
+    "href": "CONTRIBUTING.html",
+    "title": "cclddg",
+    "section": "",
+    "text": "Before anything else, please install the git hooks that run automatic scripts during each commit and merge to strip the notebooks of superfluous metadata (and avoid merge conflicts). After cloning the repository, run the following command inside it:\nnbdev_install_git_hooks\n\n\n\n\nEnsure the bug was not already reported by searching on GitHub under Issues.\nIf you’re unable to find an open issue addressing the problem, open a new one. Be sure to include a title and clear description, as much relevant information as possible, and a code sample or an executable test case demonstrating the expected behavior that is not occurring.\nBe sure to add the complete error messages.\n\n\n\n\nOpen a new GitHub pull request with the patch.\nEnsure that your PR includes a test that fails without your patch, and pass with it.\nEnsure the PR description clearly describes the problem and solution. Include the relevant issue number if applicable.\n\n\n\n\n\n\nKeep each PR focused. While it’s more convenient, do not combine several unrelated fixes together. Create as many branches as needing to keep each PR focused.\nDo not mix style changes/fixes with “functional” changes. It’s very difficult to review such PRs and it most likely get rejected.\nDo not add/remove vertical whitespace. Preserve the original style of the file you edit as much as you can.\nDo not turn an already submitted PR into your development playground. If after you submitted PR, you discovered that more work is needed - close the PR, do the required work and then submit a new PR. Otherwise each of your commits requires attention from maintainers of the project.\nIf, however, you submitted a PR and received a request for changes, you should proceed with commits inside that PR, so that the maintainer can see the incremental fixes and won’t need to review the whole PR again. In the exception case where you realize it’ll take many many commits to complete the requests, then it’s probably best to close the PR, do the work and then submit it again. Use common sense where you’d choose one way over another.\n\n\n\n\n\nDocs are automatically created from the notebooks in the nbs folder."
+  },
+  {
+    "objectID": "core.html",
+    "href": "core.html",
+    "title": "CCLDDG Core Class",
+    "section": "",
+    "text": "This section defines the different building blocks we’ll use to build the core unet and discriminator architectures.\n\n\nBy default this all uses the Swish activation function: \\(x \\cdot \\sigma(x)\\)\n\nsource\n\n\n\n\n Swish ()\n\nswish…\nYou can think of this as ‘fancy ReLU’… This is what it looks like:\n\n\nCode\nswish = Swish()\nx = torch.linspace(-8, 5, 100)\ny = swish(x)\nplt.plot(x, y)\nplt.show()\n\n\n\n\n\n\n\n\nNext, we want a way to create embeddings from various conditioning information.\n\nsource\n\n\n\n\n TimeEmbedding (n_channels:int, denom_factor=10000)\n\nEmbeddings for \\(t\\)\nThe Positional Embedding used for TimeEmbedding is a sinusoidal embedding as used in many transformer implementations: \\[\n\\begin{align}\nPE^{(1)}_{t,i} &= sin\\Bigg(\\frac{t}{10000^{\\frac{i}{d - 1}}}\\Bigg) \\\\\nPE^{(2)}_{t,i} &= cos\\Bigg(\\frac{t}{10000^{\\frac{i}{d - 1}}}\\Bigg)\n\\end{align}\n\\]\nwhere \\(d\\) is half_dim = n_channels//8\nSince we expect to encode only a small number of steps we can specify a smaller multiplier than 10000 using the denom_factor argument.\nThese sinusoidal embeddings are usually then passed through an MLP to transform them into n_channels outputs, but we can pass in return_sinusoidal_embs=True to get the raw sinusoidal embeddings for visualization purposes. Here’s an example visualizing this for t in range(0, 10):\n\n\nCode\nte = TimeEmbedding(n_channels=64, denom_factor=16)\nt = torch.arange(0, 10)\nembs = te(t, return_sinusoidal_embs=True)\nembs.shape\nplt.imshow(embs.detach(), )\nplt.xlabel('Sinusoidal Encodings (sin component then cos)')\nplt.ylabel('Input (t)')\nplt.show()\n\n\n\n\n\nWe also create embeddings to map a latent variable z and our CLOOB embedding to set numbers of channels. Both simply run the input through a small MLP to map them to n_channels outputs.\n\nsource\n\n\n\n\n ZEmbedding (z_dim:int, n_channels:int)\n\nEmbedding to map a latent z (z_dim dimensions) to n_channels via an MLP\n\nsource\n\n\n\n\n CLOOBEmbedding (n_channels:int)\n\nEmbedding to map a CLOOB embedding (512 dimensions) to n_channels via an MLP\n\n\n\nThe rest of the building blocks are fairly standard, but all here take both an input (x) and some conditioning (cond).\n\nsource\n\n\n\n\n Downsample (n_channels)\n\n\n\n\n\nsource\n\n\n\n\n Upsample (n_channels)\n\n\n\n\n\nsource\n\n\n\n\n MiddleBlock (n_channels:int, n_cond_channels:int)\n\n\n\n\nIt combines a ResidualBlock, AttentionBlock, followed by another ResidualBlock. This block is applied at the lowest resolution of the U-Net.\n\nsource\n\n\n\n\n UpBlock (in_channels:int, out_channels:int, n_cond_channels:int,\n          has_attn:bool)\n\n\n\n\nThis combines ResidualBlock and AttentionBlock. These are used in the second half of U-Net at each resolution.\n\nsource\n\n\n\n\n DownBlock (in_channels:int, out_channels:int, time_channels:int,\n            has_attn:bool)\n\n\n\n\nThis combines ResidualBlock and AttentionBlock. These are used in the first half of U-Net at each resolution.\n\nsource\n\n\n\n\n AttentionBlock (n_channels:int, n_heads:int=1, d_k:int=None,\n                 n_groups:int=32)\n\n\n\n\nThis is similar to transformer multi-head attention.\n\nsource\n\n\n\n\n ResidualBlock (in_channels:int, out_channels:int, n_cond_channels:int,\n                n_groups:int=32)\n\n\n\n\nA residual block has two convolution layers with group normalization. Each resolution is processed with two residual blocks."
+  },
+  {
+    "objectID": "core.html#the-unet-and-discriminator",
+    "href": "core.html#the-unet-and-discriminator",
+    "title": "CCLDDG Core Class",
+    "section": "The UNet and Discriminator",
+    "text": "The UNet and Discriminator\nThis is what we’ve been building up to. We want a UNet mode that can take in a (noisy) image or image-like tensor, along with some conditioning information (timestep, CLOOB embedding) and optionally a latent z, and produce an output of the same shape as the input.\n\nsource\n\nUNet\n\n UNet (image_channels:int=3, n_channels:int=64,\n       ch_mults:Union[Tuple[int,...],List[int]]=(1, 2, 2, 4),\n       is_attn:Union[Tuple[bool,...],List[int]]=(False, False, True,\n       True), n_blocks:int=2, use_z=True, z_dim:int=8,\n       n_z_channels:int=16, use_cloob=True, n_cloob_channels:int=256,\n       n_time_channels:int=-1, denom_factor:int=100)\n\n\nU-Net\nHopefully flexible enough :) Arguments:\n* `image_channels` is the number of channels in the image. $3$ for RGB.\n* `n_channels` is number of channels in the initial feature map that we transform the image into\n* `ch_mults` is the list of channel numbers at each resolution. The number of channels is `ch_mults[i] * n_channels`\n* `is_attn` is a list of booleans that indicate whether to use attention at each resolution\n* `n_blocks` is the number of `UpDownBlocks` at each resolution\n* `use_z`=True. Set to false if you don't want to include the latent z input\n* `z_dim` is the dimension of the latent `z`, and `n_z_channels` is the size of the embedding used for it.\n* `use_cloob` = True. Set to false if you don't want to use CLOOB conditioning.\n* `n_cloob_channels` - the size of the embedding used for the CLOOB conditioning input.\n* `n_time_channels` - the size of the time embedding. If -1, this is set to n_channels*4\n* `denom_factor` for the TimeEmbedding. 100 by default, set to 10,000 if wanting to do more traditional diffusion stuff where n_steps is high.\nWe’d also like a Discriminator that can take in an image, with the same optional conditioning information, and spit out a classification (real or fake). If you want to condition the discriminator on another image (e.g. in DDG the discriminator takes in \\(x_{t-1}\\) and is conditioned on \\(x_t\\)) then simply concatenate them together and use image_channels = 2*[the number of channels in a single image].\n\nsource\n\n\n\nDiscriminator\n\n Discriminator (image_channels:int=3, n_channels:int=64,\n                ch_mults:Union[Tuple[int,...],List[int]]=(1, 2, 2, 4),\n                is_attn:Union[Tuple[bool,...],List[int]]=(False, False,\n                True, True), n_blocks:int=2, use_cloob=True,\n                n_cloob_channels:int=256, n_time_channels:int=-1,\n                denom_factor:int=100)\n\n\nDiscriminator\nBased on the same architecture as the UNet, but without the upwards half. Arguments:\n* `image_channels` is the number of channels in the image. $3$ for RGB.\n* `n_channels` is number of channels in the initial feature map that we transform the image into\n* `ch_mults` is the list of channel numbers at each resolution. The number of channels is `ch_mults[i] * n_channels`\n* `is_attn` is a list of booleans that indicate whether to use attention at each resolution\n* `n_blocks` is the number of `UpDownBlocks` at each resolution\n* `use_cloob` = True. Set to false if you don't want to use CLOOB conditioning.\n* `n_cloob_channels` - the size of the embedding used for the CLOOB conditioning input.\n* `n_time_channels` - the size of the time embedding. If -1, this is set to n_channels*4\n* `denom_factor` for the TimeEmbedding. 100 by default, set to 10,000 if wanting to do more traditional diffusion stuff where n_steps is high.\nLet’s see both in action:\n\ndevice = 'cpu'\nunet = UNet(image_channels=4).to(device)\nz = torch.randn((1,8), device=device)\nc = torch.zeros((1,512), device=device)\nx = torch.randn(1, 4, 16, 16).to(device)\nt = torch.tensor(3, dtype=torch.long).unsqueeze(0).to(device)\npred_im = unet(x.float(), t, c, z)\nx.shape, pred_im.shape\n\n(torch.Size([1, 4, 16, 16]), torch.Size([1, 4, 16, 16]))\n\n\n\ndisc = Discriminator(image_channels=4, use_cloob=False)\ndisc(x, t).shape\n\ntorch.Size([1, 1])\n\n\n\nlabels = torch.tensor([1]).float()\ncriterion = nn.BCELoss()\ncriterion(disc(x, t).view(-1), labels)\n\ntensor(0.6967, grad_fn=<BinaryCrossEntropyBackward0>)"
+  },
+  {
+    "objectID": "ddg_context.html",
+    "href": "ddg_context.html",
+    "title": "Denoising Diffusion GAN Context",
+    "section": "",
+    "text": "source\n\nDDG_Context\n\n DDG_Context (n_steps=5, beta_min=0.3, beta_max=0.9, device='cpu')\n\nKeep track of the numbre of steps, variance schedule etc. And provide a few utility functions.\nIncluded functions:\n\nsource\n\n\nDDG_Context.q_xt_xtminus1\n\n DDG_Context.q_xt_xtminus1 (xtm1, t)\n\nA single noising step.\n\nsource\n\n\nDDG_Context.q_xt_x0\n\n DDG_Context.q_xt_x0 (x0, t)\n\nJump to a given step.\n\nsource\n\n\nDDG_Context.p_xt\n\n DDG_Context.p_xt (xt, noise, t)\n\nThe reverse step, not used in DDG but included for vanilla diffusion tests.\n\nsource\n\n\nDDG_Context.examples\n\n DDG_Context.examples (ae_model, unet, cloob, n_examples=12,\n                       cfg_scale_min=0, cfg_scale_max=4, prompts=['A\n                       photograph portrait of a man with a beard, a human\n                       face', 'Green hills and grass beneath a blue sky',\n                       'A watercolor painting of an underwater submarine',\n                       'A car, a photo of a red car', 'An armchair in the\n                       shape of an avocado', 'blue ocean waves', 'A red\n                       stop sign'], img_size=128, z_dim=8)\n\nGiven ae_model, a u_net and cloob, produce some example images with CFG.\nIn action:\n\nddg = DDG_Context()\nx0 = torch.randn(8, 4, 16, 16)\nt = torch.randint(0, 4, (8,), dtype=torch.long)\nx_t, n_t = ddg.q_xt_x0(x0, t)\nx_t.shape, n_t.shape\n\n(torch.Size([8, 4, 16, 16]), torch.Size([8, 4, 16, 16]))\n\n\n\n# TODO: return noise optional\n# TODO: explain what this is :)\n\n\n# TODO random t convenience function\n# TODO p_xt_xtm1 for non-DDG diffusion"
+  },
+  {
+    "objectID": "datasets.html",
+    "href": "datasets.html",
+    "title": "Dataset Management",
+    "section": "",
+    "text": "Celebrity faces. A useful test dataset since they’re roughly aligned and thus easier to generate.\n\nsource"
+  },
+  {
+    "objectID": "datasets.html#imagewoof",
+    "href": "datasets.html#imagewoof",
+    "title": "Dataset Management",
+    "section": "ImageWoof",
+    "text": "ImageWoof\nDogs - what’s not to love?\n\nsource\n\nget_imagewoof_dl\n\n get_imagewoof_dl (img_size=128, batch_size=32)\n\n\nsource\n\n\nImageWoof\n\n ImageWoof (img_size=128)\n\nOne option: custom Dataset class\n\ndl = get_imagewoof_dl()\nimages, texts = next(iter(dl))\nprint(texts[0])\ntensor_to_image(images[0]*2-1)\n\nUsing custom data configuration johnowhitaker--imagewoof2-320-6229576297321d90\nReusing dataset parquet (/root/.cache/huggingface/datasets/parquet/johnowhitaker--imagewoof2-320-6229576297321d90/0.0.0/0b6d5799bb726b24ad7fc7be720c170d8e497f575d02d47537de9a5bac074901)\n\n\n\n\n\nA photo of a Dingo\n\n\n\n\n\n\n\nConceptual Captions 12M\nThese actually have text associated with the images. Useful for text-to-image testing and so on. I’ve been meaning to do LAION as well but for now this works.\n\nsource\n\n\nget_cc12m_dl\n\n get_cc12m_dl (img_size=128, batch_size=32, url=None, num_workers=8)\n\n\ndl = get_cc12m_dl()\nimages, texts = next(iter(dl))\ntensor_to_image(images[0]*2-1)\n\n\n\n\n\n\nPaired VQGAN reconstructions\nI also tried an image repair task, that requires a low quality image and a high quality version. The ‘Low quality version’ is a 256px image that has been encoded then decoded with VQGAN. The target is the 512px reference image.\n\nsource\n\n\nget_paired_vqgan\n\n get_paired_vqgan (batch_size=32)\n\n\ndl = get_paired_vqgan()\nlq, hq = next(iter(dl))\nprint(lq.shape, hq.shape)\ntensor_to_image(lq[0]*2-1)\n\ntorch.Size([32, 3, 256, 256]) torch.Size([32, 3, 512, 512])"
+  }
+]

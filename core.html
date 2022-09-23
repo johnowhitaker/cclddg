@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.148">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Defining the key UNet and Discriminator architectures used.">
+
+<title>cclddg - CCLDDG Core Class</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="cclddg - CCLDDG Core Class">
+<meta property="og:description" content="Defining the key UNet and Discriminator architectures used.">
+<meta property="og:site-name" content="cclddg">
+<meta name="twitter:title" content="cclddg - CCLDDG Core Class">
+<meta name="twitter:description" content="Defining the key UNet and Discriminator architectures used.">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">cclddg</span>
+    </a>
+  </div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">CCLDDG Core Class</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">CLOOB Conditioned Latent Denoising Diffusion GAN</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./core.html" class="sidebar-item-text sidebar-link active">CCLDDG Core Class</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ddg_context.html" class="sidebar-item-text sidebar-link">Denoising Diffusion GAN Context</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./datasets.html" class="sidebar-item-text sidebar-link">Dataset Management</a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#building-blocks" id="toc-building-blocks" class="nav-link active" data-scroll-target="#building-blocks">Building Blocks</a>
+  <ul class="collapse">
+  <li><a href="#the-activation-function" id="toc-the-activation-function" class="nav-link" data-scroll-target="#the-activation-function">The activation function:</a></li>
+  <li><a href="#swish" id="toc-swish" class="nav-link" data-scroll-target="#swish">Swish</a></li>
+  <li><a href="#embeddings" id="toc-embeddings" class="nav-link" data-scroll-target="#embeddings">Embeddings</a></li>
+  <li><a href="#timeembedding" id="toc-timeembedding" class="nav-link" data-scroll-target="#timeembedding">TimeEmbedding</a></li>
+  <li><a href="#zembedding" id="toc-zembedding" class="nav-link" data-scroll-target="#zembedding">ZEmbedding</a></li>
+  <li><a href="#cloobembedding" id="toc-cloobembedding" class="nav-link" data-scroll-target="#cloobembedding">CLOOBEmbedding</a></li>
+  <li><a href="#additional-components" id="toc-additional-components" class="nav-link" data-scroll-target="#additional-components">Additional Components</a></li>
+  <li><a href="#downsample" id="toc-downsample" class="nav-link" data-scroll-target="#downsample">Downsample</a></li>
+  <li><a href="#scale-down-the-feature-map-by-0.5" id="toc-scale-down-the-feature-map-by-0.5" class="nav-link" data-scroll-target="#scale-down-the-feature-map-by-0.5">Scale down the feature map by 0.5</a></li>
+  <li><a href="#upsample" id="toc-upsample" class="nav-link" data-scroll-target="#upsample">Upsample</a></li>
+  <li><a href="#scale-up-the-feature-map-by-2." id="toc-scale-up-the-feature-map-by-2." class="nav-link" data-scroll-target="#scale-up-the-feature-map-by-2.">Scale up the feature map by 2.</a></li>
+  <li><a href="#middleblock" id="toc-middleblock" class="nav-link" data-scroll-target="#middleblock">MiddleBlock</a></li>
+  <li><a href="#middle-block" id="toc-middle-block" class="nav-link" data-scroll-target="#middle-block">Middle block</a></li>
+  <li><a href="#upblock" id="toc-upblock" class="nav-link" data-scroll-target="#upblock">UpBlock</a></li>
+  <li><a href="#up-block" id="toc-up-block" class="nav-link" data-scroll-target="#up-block">Up block</a></li>
+  <li><a href="#downblock" id="toc-downblock" class="nav-link" data-scroll-target="#downblock">DownBlock</a></li>
+  <li><a href="#down-block" id="toc-down-block" class="nav-link" data-scroll-target="#down-block">Down block</a></li>
+  <li><a href="#attentionblock" id="toc-attentionblock" class="nav-link" data-scroll-target="#attentionblock">AttentionBlock</a></li>
+  <li><a href="#attention-block" id="toc-attention-block" class="nav-link" data-scroll-target="#attention-block">Attention block</a></li>
+  <li><a href="#residualblock" id="toc-residualblock" class="nav-link" data-scroll-target="#residualblock">ResidualBlock</a></li>
+  <li><a href="#residual-block" id="toc-residual-block" class="nav-link" data-scroll-target="#residual-block">Residual block</a></li>
+  </ul></li>
+  <li><a href="#the-unet-and-discriminator" id="toc-the-unet-and-discriminator" class="nav-link" data-scroll-target="#the-unet-and-discriminator">The UNet and Discriminator</a>
+  <ul class="collapse">
+  <li><a href="#unet" id="toc-unet" class="nav-link" data-scroll-target="#unet">UNet</a></li>
+  <li><a href="#discriminator" id="toc-discriminator" class="nav-link" data-scroll-target="#discriminator">Discriminator</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/johnowhitaker/cclddg/tree/master/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">CCLDDG Core Class</h1>
+</div>
+
+<div>
+  <div class="description">
+    Defining the key UNet and Discriminator architectures used.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    
+  </div>
+  
+
+</header>
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<section id="building-blocks" class="level2">
+<h2 class="anchored" data-anchor-id="building-blocks">Building Blocks</h2>
+<p>This section defines the different building blocks we’ll use to build the core unet and discriminator architectures.</p>
+<section id="the-activation-function" class="level3">
+<h3 class="anchored" data-anchor-id="the-activation-function">The activation function:</h3>
+<p>By default this all uses the <a href="https://johnowhitaker.github.io/cclddg/core.html#swish"><code>Swish</code></a> activation function: <span class="math inline">\(x \cdot \sigma(x)\)</span></p>
+<hr>
+<p><a href="https://github.com/johnowhitaker/cclddg/tree/master/blob/master/cclddg/core.py#L14" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="swish" class="level3">
+<h3 class="anchored" data-anchor-id="swish">Swish</h3>
+<blockquote class="blockquote">
+<pre><code> Swish ()</code></pre>
+</blockquote>
+<p><em>swish…</em></p>
+<p>You can think of this as ‘fancy ReLU’… This is what it looks like:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>swish <span class="op">=</span> Swish()</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> torch.linspace(<span class="op">-</span><span class="dv">8</span>, <span class="dv">5</span>, <span class="dv">100</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> swish(x)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>plt.plot(x, y)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="00_core_files/figure-html/cell-4-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+</section>
+<section id="embeddings" class="level3">
+<h3 class="anchored" data-anchor-id="embeddings">Embeddings</h3>
+<p>Next, we want a way to create embeddings from various conditioning information.</p>
+<hr>
+<p><a href="https://github.com/johnowhitaker/cclddg/tree/master/blob/master/cclddg/core.py#L21" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="timeembedding" class="level3">
+<h3 class="anchored" data-anchor-id="timeembedding">TimeEmbedding</h3>
+<blockquote class="blockquote">
+<pre><code> TimeEmbedding (n_channels:int, denom_factor=10000)</code></pre>
+</blockquote>
+<p>Embeddings for <span class="math inline">\(t\)</span></p>
+<p>The Positional Embedding used for <a href="https://johnowhitaker.github.io/cclddg/core.html#timeembedding"><code>TimeEmbedding</code></a> is a sinusoidal embedding as used in many transformer implementations: <span class="math display">\[
+\begin{align}
+PE^{(1)}_{t,i} &amp;= sin\Bigg(\frac{t}{10000^{\frac{i}{d - 1}}}\Bigg) \\
+PE^{(2)}_{t,i} &amp;= cos\Bigg(\frac{t}{10000^{\frac{i}{d - 1}}}\Bigg)
+\end{align}
+\]</span></p>
+<p>where <span class="math inline">\(d\)</span> is <code>half_dim</code> = <code>n_channels//8</code></p>
+<p>Since we expect to encode only a small number of steps we can specify a smaller multiplier than 10000 using the <code>denom_factor</code> argument.</p>
+<p>These sinusoidal embeddings are usually then passed through an MLP to transform them into n_channels outputs, but we can pass in <code>return_sinusoidal_embs=True</code> to get the raw sinusoidal embeddings for visualization purposes. Here’s an example visualizing this for t in range(0, 10):</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>te <span class="op">=</span> TimeEmbedding(n_channels<span class="op">=</span><span class="dv">64</span>, denom_factor<span class="op">=</span><span class="dv">16</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> torch.arange(<span class="dv">0</span>, <span class="dv">10</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>embs <span class="op">=</span> te(t, return_sinusoidal_embs<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>embs.shape</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>plt.imshow(embs.detach(), )</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Sinusoidal Encodings (sin component then cos)'</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Input (t)'</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="00_core_files/figure-html/cell-6-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>We also create embeddings to map a latent variable <code>z</code> and our CLOOB embedding to set numbers of channels. Both simply run the input through a small MLP to map them to <code>n_channels</code> outputs.</p>
+<hr>
+<p><a href="https://github.com/johnowhitaker/cclddg/tree/master/blob/master/cclddg/core.py#L75" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="zembedding" class="level3">
+<h3 class="anchored" data-anchor-id="zembedding">ZEmbedding</h3>
+<blockquote class="blockquote">
+<pre><code> ZEmbedding (z_dim:int, n_channels:int)</code></pre>
+</blockquote>
+<p>Embedding to map a latent z (<code>z_dim</code> dimensions) to n_channels via an MLP</p>
+<hr>
+<p><a href="https://github.com/johnowhitaker/cclddg/tree/master/blob/master/cclddg/core.py#L59" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="cloobembedding" class="level3">
+<h3 class="anchored" data-anchor-id="cloobembedding">CLOOBEmbedding</h3>
+<blockquote class="blockquote">
+<pre><code> CLOOBEmbedding (n_channels:int)</code></pre>
+</blockquote>
+<p>Embedding to map a CLOOB embedding (512 dimensions) to n_channels via an MLP</p>
+</section>
+<section id="additional-components" class="level3">
+<h3 class="anchored" data-anchor-id="additional-components">Additional Components</h3>
+<p>The rest of the building blocks are fairly standard, but all here take both an input (x) and some conditioning (cond).</p>
+<hr>
+<p><a href="https://github.com/johnowhitaker/cclddg/tree/master/blob/master/cclddg/core.py#L290" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="downsample" class="level3">
+<h3 class="anchored" data-anchor-id="downsample">Downsample</h3>
+<blockquote class="blockquote">
+<pre><code> Downsample (n_channels)</code></pre>
+</blockquote>
+</section>
+<section id="scale-down-the-feature-map-by-0.5" class="level3">
+<h3 class="anchored" data-anchor-id="scale-down-the-feature-map-by-0.5">Scale down the feature map by 0.5</h3>
+<hr>
+<p><a href="https://github.com/johnowhitaker/cclddg/tree/master/blob/master/cclddg/core.py#L274" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="upsample" class="level3">
+<h3 class="anchored" data-anchor-id="upsample">Upsample</h3>
+<blockquote class="blockquote">
+<pre><code> Upsample (n_channels)</code></pre>
+</blockquote>
+</section>
+<section id="scale-up-the-feature-map-by-2." class="level3">
+<h3 class="anchored" data-anchor-id="scale-up-the-feature-map-by-2.">Scale up the feature map by 2.</h3>
+<hr>
+<p><a href="https://github.com/johnowhitaker/cclddg/tree/master/blob/master/cclddg/core.py#L254" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="middleblock" class="level3">
+<h3 class="anchored" data-anchor-id="middleblock">MiddleBlock</h3>
+<blockquote class="blockquote">
+<pre><code> MiddleBlock (n_channels:int, n_cond_channels:int)</code></pre>
+</blockquote>
+</section>
+<section id="middle-block" class="level3">
+<h3 class="anchored" data-anchor-id="middle-block">Middle block</h3>
+<p>It combines a <code>ResidualBlock</code>, <code>AttentionBlock</code>, followed by another <code>ResidualBlock</code>. This block is applied at the lowest resolution of the U-Net.</p>
+<hr>
+<p><a href="https://github.com/johnowhitaker/cclddg/tree/master/blob/master/cclddg/core.py#L232" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="upblock" class="level3">
+<h3 class="anchored" data-anchor-id="upblock">UpBlock</h3>
+<blockquote class="blockquote">
+<pre><code> UpBlock (in_channels:int, out_channels:int, n_cond_channels:int,
+          has_attn:bool)</code></pre>
+</blockquote>
+</section>
+<section id="up-block" class="level3">
+<h3 class="anchored" data-anchor-id="up-block">Up block</h3>
+<p>This combines <code>ResidualBlock</code> and <code>AttentionBlock</code>. These are used in the second half of U-Net at each resolution.</p>
+<hr>
+<p><a href="https://github.com/johnowhitaker/cclddg/tree/master/blob/master/cclddg/core.py#L212" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="downblock" class="level3">
+<h3 class="anchored" data-anchor-id="downblock">DownBlock</h3>
+<blockquote class="blockquote">
+<pre><code> DownBlock (in_channels:int, out_channels:int, time_channels:int,
+            has_attn:bool)</code></pre>
+</blockquote>
+</section>
+<section id="down-block" class="level3">
+<h3 class="anchored" data-anchor-id="down-block">Down block</h3>
+<p>This combines <code>ResidualBlock</code> and <code>AttentionBlock</code>. These are used in the first half of U-Net at each resolution.</p>
+<hr>
+<p><a href="https://github.com/johnowhitaker/cclddg/tree/master/blob/master/cclddg/core.py#L145" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="attentionblock" class="level3">
+<h3 class="anchored" data-anchor-id="attentionblock">AttentionBlock</h3>
+<blockquote class="blockquote">
+<pre><code> AttentionBlock (n_channels:int, n_heads:int=1, d_k:int=None,
+                 n_groups:int=32)</code></pre>
+</blockquote>
+</section>
+<section id="attention-block" class="level3">
+<h3 class="anchored" data-anchor-id="attention-block">Attention block</h3>
+<p>This is similar to <a href="../../transformers/mha.html">transformer multi-head attention</a>.</p>
+<hr>
+<p><a href="https://github.com/johnowhitaker/cclddg/tree/master/blob/master/cclddg/core.py#L94" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="residualblock" class="level3">
+<h3 class="anchored" data-anchor-id="residualblock">ResidualBlock</h3>
+<blockquote class="blockquote">
+<pre><code> ResidualBlock (in_channels:int, out_channels:int, n_cond_channels:int,
+                n_groups:int=32)</code></pre>
+</blockquote>
+</section>
+<section id="residual-block" class="level3">
+<h3 class="anchored" data-anchor-id="residual-block">Residual block</h3>
+<p>A residual block has two convolution layers with group normalization. Each resolution is processed with two residual blocks.</p>
+</section>
+</section>
+<section id="the-unet-and-discriminator" class="level2">
+<h2 class="anchored" data-anchor-id="the-unet-and-discriminator">The UNet and Discriminator</h2>
+<p>This is what we’ve been building up to. We want a UNet mode that can take in a (noisy) image or image-like tensor, along with some conditioning information (timestep, CLOOB embedding) and optionally a latent <code>z</code>, and produce an output of the same shape as the input.</p>
+<hr>
+<p><a href="https://github.com/johnowhitaker/cclddg/tree/master/blob/master/cclddg/core.py#L307" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="unet" class="level3">
+<h3 class="anchored" data-anchor-id="unet">UNet</h3>
+<blockquote class="blockquote">
+<pre><code> UNet (image_channels:int=3, n_channels:int=64,
+       ch_mults:Union[Tuple[int,...],List[int]]=(1, 2, 2, 4),
+       is_attn:Union[Tuple[bool,...],List[int]]=(False, False, True,
+       True), n_blocks:int=2, use_z=True, z_dim:int=8,
+       n_z_channels:int=16, use_cloob=True, n_cloob_channels:int=256,
+       n_time_channels:int=-1, denom_factor:int=100)</code></pre>
+</blockquote>
+<section id="u-net" class="level4">
+<h4 class="anchored" data-anchor-id="u-net">U-Net</h4>
+<p>Hopefully flexible enough :) Arguments:</p>
+<pre><code>* `image_channels` is the number of channels in the image. $3$ for RGB.
+* `n_channels` is number of channels in the initial feature map that we transform the image into
+* `ch_mults` is the list of channel numbers at each resolution. The number of channels is `ch_mults[i] * n_channels`
+* `is_attn` is a list of booleans that indicate whether to use attention at each resolution
+* `n_blocks` is the number of `UpDownBlocks` at each resolution
+* `use_z`=True. Set to false if you don't want to include the latent z input
+* `z_dim` is the dimension of the latent `z`, and `n_z_channels` is the size of the embedding used for it.
+* `use_cloob` = True. Set to false if you don't want to use CLOOB conditioning.
+* `n_cloob_channels` - the size of the embedding used for the CLOOB conditioning input.
+* `n_time_channels` - the size of the time embedding. If -1, this is set to n_channels*4
+* `denom_factor` for the TimeEmbedding. 100 by default, set to 10,000 if wanting to do more traditional diffusion stuff where n_steps is high.</code></pre>
+<p>We’d also like a Discriminator that can take in an image, with the same optional conditioning information, and spit out a classification (real or fake). If you want to condition the discriminator on another image (e.g.&nbsp;in DDG the discriminator takes in <span class="math inline">\(x_{t-1}\)</span> and is conditioned on <span class="math inline">\(x_t\)</span>) then simply concatenate them together and use <code>image_channels = 2*[the number of channels in a single image]</code>.</p>
+<hr>
+<p><a href="https://github.com/johnowhitaker/cclddg/tree/master/blob/master/cclddg/core.py#L464" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+</section>
+<section id="discriminator" class="level3">
+<h3 class="anchored" data-anchor-id="discriminator">Discriminator</h3>
+<blockquote class="blockquote">
+<pre><code> Discriminator (image_channels:int=3, n_channels:int=64,
+                ch_mults:Union[Tuple[int,...],List[int]]=(1, 2, 2, 4),
+                is_attn:Union[Tuple[bool,...],List[int]]=(False, False,
+                True, True), n_blocks:int=2, use_cloob=True,
+                n_cloob_channels:int=256, n_time_channels:int=-1,
+                denom_factor:int=100)</code></pre>
+</blockquote>
+<section id="discriminator-1" class="level4">
+<h4 class="anchored" data-anchor-id="discriminator-1">Discriminator</h4>
+<p>Based on the same architecture as the UNet, but without the upwards half. Arguments:</p>
+<pre><code>* `image_channels` is the number of channels in the image. $3$ for RGB.
+* `n_channels` is number of channels in the initial feature map that we transform the image into
+* `ch_mults` is the list of channel numbers at each resolution. The number of channels is `ch_mults[i] * n_channels`
+* `is_attn` is a list of booleans that indicate whether to use attention at each resolution
+* `n_blocks` is the number of `UpDownBlocks` at each resolution
+* `use_cloob` = True. Set to false if you don't want to use CLOOB conditioning.
+* `n_cloob_channels` - the size of the embedding used for the CLOOB conditioning input.
+* `n_time_channels` - the size of the time embedding. If -1, this is set to n_channels*4
+* `denom_factor` for the TimeEmbedding. 100 by default, set to 10,000 if wanting to do more traditional diffusion stuff where n_steps is high.</code></pre>
+<p>Let’s see both in action:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>device <span class="op">=</span> <span class="st">'cpu'</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>unet <span class="op">=</span> UNet(image_channels<span class="op">=</span><span class="dv">4</span>).to(device)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>z <span class="op">=</span> torch.randn((<span class="dv">1</span>,<span class="dv">8</span>), device<span class="op">=</span>device)</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>c <span class="op">=</span> torch.zeros((<span class="dv">1</span>,<span class="dv">512</span>), device<span class="op">=</span>device)</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> torch.randn(<span class="dv">1</span>, <span class="dv">4</span>, <span class="dv">16</span>, <span class="dv">16</span>).to(device)</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> torch.tensor(<span class="dv">3</span>, dtype<span class="op">=</span>torch.<span class="bu">long</span>).unsqueeze(<span class="dv">0</span>).to(device)</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>pred_im <span class="op">=</span> unet(x.<span class="bu">float</span>(), t, c, z)</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>x.shape, pred_im.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(torch.Size([1, 4, 16, 16]), torch.Size([1, 4, 16, 16]))</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>disc <span class="op">=</span> Discriminator(image_channels<span class="op">=</span><span class="dv">4</span>, use_cloob<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>disc(x, t).shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>torch.Size([1, 1])</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>labels <span class="op">=</span> torch.tensor([<span class="dv">1</span>]).<span class="bu">float</span>()</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>criterion <span class="op">=</span> nn.BCELoss()</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>criterion(disc(x, t).view(<span class="op">-</span><span class="dv">1</span>), labels)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>tensor(0.6967, grad_fn=&lt;BinaryCrossEntropyBackward0&gt;)</code></pre>
+</div>
+</div>
+
+
+</section>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
